@@ -74,10 +74,10 @@ export function PullRequests(props: { repo?: string }) {
             actions={
                 <ActionPanel>
                     <ActionPanel.Section title="Navigation">
-                        <Action.SubmitForm title={showBot ? "Hide bot PR" : "Show bot PR"}
-                                           icon={showBot ? Icon.EyeDisabled : Icon.Eye}
-                                           shortcut={{modifiers: ["cmd"], key: "i"}}
-                                           onSubmit={() => setShowBot((x) => !x)}/>
+                        <Action title={showBot ? "Hide bot PR" : "Show bot PR"}
+                                icon={showBot ? Icon.EyeDisabled : Icon.Eye}
+                                shortcut={{modifiers: ["cmd"], key: "i"}}
+                                onAction={() => setShowBot((x) => !x)}/>
                     </ActionPanel.Section>
                 </ActionPanel>
             }
@@ -93,14 +93,14 @@ export function PullRequests(props: { repo?: string }) {
                                    <Action.OpenInBrowser title="Open in browser"
                                                          shortcut={{modifiers: ["cmd"], key: "o"}}
                                                          url={pull.html_url}/>
-                                   <Action.SubmitForm title={showBody ? "Hide body" : "Show body"}
-                                                      icon={showBody ? Icon.EyeDisabled : Icon.Eye}
-                                                      shortcut={{modifiers: ["cmd"], key: "b"}}
-                                                      onSubmit={() => setShowBody((x) => !x)}/>
-                                   <Action.SubmitForm title={showBot ? "Hide bot PR" : "Show bot PR"}
-                                                      icon={showBot ? Icon.EyeDisabled : Icon.Eye}
-                                                      shortcut={{modifiers: ["cmd"], key: "i"}}
-                                                      onSubmit={() => setShowBot((x) => !x)}/>
+                                   <Action title={showBody ? "Hide body" : "Show body"}
+                                           icon={showBody ? Icon.EyeDisabled : Icon.Eye}
+                                           shortcut={{modifiers: ["cmd"], key: "b"}}
+                                           onAction={() => setShowBody((x) => !x)}/>
+                                   <Action title={showBot ? "Hide bot PR" : "Show bot PR"}
+                                           icon={showBot ? Icon.EyeDisabled : Icon.Eye}
+                                           shortcut={{modifiers: ["cmd"], key: "i"}}
+                                           onAction={() => setShowBot((x) => !x)}/>
                                </ActionPanel.Section>
                            </ActionPanel>
                        }
