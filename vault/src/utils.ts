@@ -56,8 +56,8 @@ export function setVaultNamespace(newNamespace: string) {
     cache.remove(VAULT_TOKEN_CACHE_KEY);
 }
 
-export function getTechnicalPaths() {
-    return preferences.technicalPaths.split(' ');
+export function getTechnicalPaths(): string[] {
+    return preferences.technicalPaths ? preferences.technicalPaths.split(' ') : [];
 }
 
 export function getUserToken(): string {

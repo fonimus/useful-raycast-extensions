@@ -2,7 +2,6 @@ import {
     Action,
     ActionPanel,
     Alert,
-    Cache,
     confirmAlert,
     Detail,
     Icon,
@@ -11,15 +10,9 @@ import {
     Toast,
     useNavigation
 } from "@raycast/api";
+import {useCachedState} from "@raycast/utils";
 import {useEffect, useState} from "react";
-import {
-    DeleteMode,
-    DISPLAY_MODE_CACHE_KEY,
-    DisplayMode,
-    VaultEntry,
-    VaultReadMetadataResponse,
-    WITH_DETAILS_CACHE_KEY
-} from "../interfaces";
+import {DeleteMode, DisplayMode, VaultEntry, VaultReadMetadataResponse,} from "../interfaces";
 import {
     callDelete,
     callRead,
@@ -44,23 +37,8 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
     const [result, setResult] = useState<string | undefined>(undefined);
     const [metadata, setMetadata] = useState<VaultReadMetadataResponse | undefined>();
 
-    const cache = new Cache();
-    const withDetailsFromCache = cache.get(WITH_DETAILS_CACHE_KEY);
-    const [withDetails, setWithDetails] = useState<boolean>(withDetailsFromCache ? withDetailsFromCache === 'true' : true);
-    const displayModeFromCache = cache.get(DISPLAY_MODE_CACHE_KEY);
-    const [displayMode, setDisplayMode] = useState<DisplayMode>(displayModeFromCache ? displayModeFromCache as DisplayMode : DisplayMode.list);
-
-    async function toggleWithDetails() {
-        const newValue = !withDetails;
-        setWithDetails(newValue);
-        cache.set(WITH_DETAILS_CACHE_KEY, newValue.toString());
-    }
-
-    async function toggleDisplayMode() {
-        const newValue = displayMode === DisplayMode.list ? DisplayMode.json : DisplayMode.list;
-        setDisplayMode(newValue);
-        cache.set(DISPLAY_MODE_CACHE_KEY, newValue.toString());
-    }
+    const [withDetails, setWithDetails] = useCachedState<boolean>('with-details', true);
+    const [displayMode, setDisplayMode] = useCachedState<DisplayMode>('display-mode', DisplayMode.list);
 
     async function getSecret() {
         setIsLoading(true);
@@ -215,10 +193,10 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                 {!metadata?.current_version.destroyed && metadata?.current_version.deletion_time === '' &&
                     <Action icon={Icon.AppWindowList} title={"Display result as " + (entry ? 'json' : 'list')}
                             shortcut={{modifiers: ["cmd"], key: "d"}}
-                            onAction={toggleDisplayMode}/>}
+                            onAction={() => setDisplayMode((displayMode) => displayMode === DisplayMode.json ? DisplayMode.list : DisplayMode.json)}/>}
                 <Action icon={Icon.Info} title="Display details"
                         shortcut={{modifiers: ["cmd"], key: "i"}}
-                        onAction={toggleWithDetails}/>
+                        onAction={() => setWithDetails((x) => !x)}/>
                 <Action.OpenInBrowser title="Open in vault"
                                       shortcut={{modifiers: ["cmd"], key: "o"}}
                                       url={`${getVaultUrl()}/ui/vault/secrets/secret/show/${props.path}?namespace=${getVaultNamespace()}`}/>

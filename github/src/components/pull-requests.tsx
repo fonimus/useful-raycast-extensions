@@ -1,33 +1,16 @@
 import {useState} from "react";
 import {Label, PullRequest} from "@octokit/webhooks-types";
-import {Action, ActionPanel, Cache, Icon, List} from "@raycast/api";
+import {Action, ActionPanel, Icon, List} from "@raycast/api";
+import {useCachedState} from "@raycast/utils";
 import {duration, getOwner, githubClient, repoFromPrefs} from "../utils";
-
-const SHOW_BOT_CACHE_KEY = "show-bot";
-const SHOW_BODY_CACHE_KEY = "show-body";
 
 export function PullRequests(props: { repo?: string }) {
     const [isLoading, setIsLoading] = useState(false);
     const [navigation, setNavigation] = useState(props.repo);
     const [pulls, setPulls] = useState<PullRequest[]>([]);
 
-    const cache = new Cache();
-    const showBotFromCache = cache.get(SHOW_BOT_CACHE_KEY);
-    const [showBot, setShowBot] = useState<boolean>(showBotFromCache ? showBotFromCache === 'true' : false);
-    const showBodyFromCache = cache.get(SHOW_BODY_CACHE_KEY);
-    const [showBody, setShowBody] = useState<boolean>(showBodyFromCache ? showBodyFromCache === "true" : false);
-
-    async function toggleShowBot() {
-        const newValue = !showBot;
-        setShowBot(newValue);
-        cache.set(SHOW_BOT_CACHE_KEY, newValue.toString());
-    }
-
-    async function toggleShowBody() {
-        const newValue = !showBody;
-        setShowBody(newValue);
-        cache.set(SHOW_BODY_CACHE_KEY, newValue.toString());
-    }
+    const [showBot, setShowBot] = useCachedState<boolean>('show-bot', false);
+    const [showBody, setShowBody] = useCachedState<boolean>('show-body', false);
 
     async function getDetails(state: string, page = 0) {
         setIsLoading(true)
@@ -94,7 +77,7 @@ export function PullRequests(props: { repo?: string }) {
                         <Action.SubmitForm title={showBot ? "Hide bot PR" : "Show bot PR"}
                                            icon={showBot ? Icon.EyeDisabled : Icon.Eye}
                                            shortcut={{modifiers: ["cmd"], key: "i"}}
-                                           onSubmit={toggleShowBot}/>
+                                           onSubmit={() => setShowBot((x) => !x)}/>
                     </ActionPanel.Section>
                 </ActionPanel>
             }
@@ -113,11 +96,11 @@ export function PullRequests(props: { repo?: string }) {
                                    <Action.SubmitForm title={showBody ? "Hide body" : "Show body"}
                                                       icon={showBody ? Icon.EyeDisabled : Icon.Eye}
                                                       shortcut={{modifiers: ["cmd"], key: "b"}}
-                                                      onSubmit={toggleShowBody}/>
+                                                      onSubmit={() => setShowBody((x) => !x)}/>
                                    <Action.SubmitForm title={showBot ? "Hide bot PR" : "Show bot PR"}
                                                       icon={showBot ? Icon.EyeDisabled : Icon.Eye}
                                                       shortcut={{modifiers: ["cmd"], key: "i"}}
-                                                      onSubmit={toggleShowBot}/>
+                                                      onSubmit={() => setShowBot((x) => !x)}/>
                                </ActionPanel.Section>
                            </ActionPanel>
                        }

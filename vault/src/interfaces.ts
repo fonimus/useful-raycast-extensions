@@ -2,8 +2,6 @@
 
 export const VAULT_TOKEN_CACHE_KEY = "vault-token";
 export const VAULT_NAMESPACE_CACHE_KEY = "vault-namespace";
-export const DISPLAY_MODE_CACHE_KEY = "display-mode";
-export const WITH_DETAILS_CACHE_KEY = "with-details";
 
 export enum DisplayMode {
     list = "list",
