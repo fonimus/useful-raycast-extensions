@@ -1,0 +1,80 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "github",
+  "title": "Github",
+  "description": "Github extension for raycast",
+  "icon": "github.png",
+  "author": "fonimus",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "repo",
+      "title": "Repo",
+      "subtitle": "Github - repositories",
+      "description": "Overview of github repo and pull requests",
+      "mode": "view"
+    },
+    {
+      "name": "pull",
+      "title": "Pull",
+      "subtitle": "Github - pull requests",
+      "description": "Overview of github pull requests",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "url",
+      "title": "Github url",
+      "description": "Github url",
+      "type": "textfield",
+      "required": true,
+      "default": "https://github.com/"
+    },
+    {
+      "name": "org",
+      "title": "Github organization",
+      "description": "Github organization",
+      "type": "textfield",
+      "required": true
+    },
+    {
+      "name": "token",
+      "title": "Github token",
+      "description": "Github personal generated token",
+      "type": "password",
+      "required": true
+    },
+    {
+      "name": "repositories",
+      "title": "Github repositories",
+      "description": "Github repositories separated by space",
+      "type": "textfield",
+      "required": true
+    }
+  ],
+  "dependencies": {
+    "@octokit/types": "^8.0.0",
+    "@raycast/api": "^1.40.3",
+    "human-date": "^1.4.0",
+    "octokit": "^2.0.9"
+  },
+  "devDependencies": {
+    "@types/human-date": "^1.4.2",
+    "@types/node": "16.10.3",
+    "@types/react": "18.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.4.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "ray publish"
+  }
+}

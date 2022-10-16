@@ -1,0 +1,72 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "vault",
+  "title": "Vault",
+  "description": "Vault extension for raycast",
+  "icon": "vault.png",
+  "author": "fonimus",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "vault",
+      "title": "Vault",
+      "subtitle": "Explore vault secrets",
+      "description": "Explore vault secrets",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "url",
+      "title": "Vault url",
+      "description": "Vault url",
+      "type": "textfield",
+      "required": true
+    },
+    {
+      "name": "ldap",
+      "title": "Ldap",
+      "description": "Ldap identifier",
+      "type": "textfield",
+      "required": true
+    },
+    {
+      "name": "password",
+      "title": "Password",
+      "description": "Ldap password",
+      "type": "password",
+      "required": true
+    },
+    {
+      "name": "technicalPaths",
+      "title": "Technical paths",
+      "description": "Technical paths to hide, separated by space",
+      "type": "textfield",
+      "required": false
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.40.3",
+    "got": "^12.5.1",
+    "human-date": "^1.4.0",
+    "node-vault": "^0.9.22"
+  },
+  "devDependencies": {
+    "@types/human-date": "^1.4.2",
+    "@types/node": "16.10.3",
+    "@types/react": "18.0.9",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "^2.5.1",
+    "typescript": "^4.4.3"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "publish": "ray publish"
+  }
+}
