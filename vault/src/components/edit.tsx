@@ -1,8 +1,8 @@
 import {Action, ActionPanel, Alert, confirmAlert, Form, Icon, showToast, Toast, useNavigation} from "@raycast/api";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {callWrite, stringify} from "../utils";
 import {VaultDisplay} from "./display";
-import {copyToken} from "./actions";
+import {CopyToken} from "./actions";
 import ActionStyle = Alert.ActionStyle;
 
 export function VaultEdit(props: { path: string, currentSecret: object }) {
@@ -11,7 +11,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
     const [isLoading, setIsLoading] = useState(false);
     const [newSecret, setNewSecret] = useState<string>(stringify(props.currentSecret));
 
-    async function saveSecret(values: { newSecret: string; }) {
+    const saveSecret = useCallback(async (values: { newSecret: string; }) => {
         setIsLoading(true)
         const toast = await showToast({
             style: Toast.Style.Animated,
@@ -19,7 +19,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
         });
 
         try {
-            const newSecret = JSON.parse(values.newSecret)
+            const newSecretData = JSON.parse(values.newSecret)
 
             if (await confirmAlert({
                 title: "Are you sure you want to erase secret ?",
@@ -35,7 +35,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
                 }
             })) {
 
-                const response = await callWrite(props.path, newSecret);
+                const response = await callWrite(props.path, newSecretData);
 
                 toast.style = Toast.Style.Success;
                 toast.message = "Secret saved (version " + response.version + "), reloading";
@@ -43,7 +43,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
                 // redirect to read saved secret after 1 sec
                 setTimeout(() => push(<VaultDisplay path={props.path}/>), 1000)
             } else {
-                toast.hide()
+                await toast.hide()
             }
         } catch (error) {
             toast.style = Toast.Style.Failure;
@@ -51,7 +51,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
         } finally {
             setIsLoading(false);
         }
-    }
+    }, []);
 
     return <Form
         isLoading={isLoading}
@@ -61,15 +61,13 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
                                    icon={Icon.SaveDocument}
                                    shortcut={{modifiers: ["cmd"], key: "s"}}/>
                 <Action title={"Go back"} icon={Icon.ArrowLeft} onAction={() => pop()}/>
-                {copyToken()}
+                <CopyToken/>
             </ActionPanel>
-        }
-    >
+        }>
         <Form.TextArea
             id="newSecret"
             title="New secret"
             value={newSecret}
-            onChange={setNewSecret}
-        />
+            onChange={setNewSecret}/>
     </Form>
 }

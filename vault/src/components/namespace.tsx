@@ -1,7 +1,7 @@
 import {Action, ActionPanel, Form, Icon, useNavigation} from "@raycast/api";
 import {setVaultNamespace} from "../utils";
 import {VaultTree} from "./tree";
-import {copyToken, openVault} from "./actions";
+import {CopyToken, OpenVault} from "./actions";
 
 export function VaultNamespace() {
     const {push} = useNavigation();
@@ -15,8 +15,8 @@ export function VaultNamespace() {
         actions={
             <ActionPanel>
                 <Action.SubmitForm icon={Icon.Cog} title="Set namespace" onSubmit={setNamespaceAndGoToTree}/>
-                {copyToken()}
-                {openVault()}
+                <CopyToken/>
+                <OpenVault/>
             </ActionPanel>
         }>
         <Form.TextField id="namespace" title="Namespace" storeValue/>

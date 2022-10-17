@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Repository} from "@octokit/webhooks-types";
 import {Action, ActionPanel, Icon, List} from "@raycast/api";
 import {buildUrl, getOwner, githubClient, repoFromPrefs} from "../utils";
@@ -8,7 +8,7 @@ export function RepoList() {
     const [isLoading, setIsLoading] = useState(false);
     const [repos, setRepos] = useState<Repository[]>(repoFromPrefs());
 
-    async function getInfo() {
+    const getInfo = useCallback(async () => {
         setIsLoading(true)
         try {
             const promises = repos.map(repo => githubClient.rest.repos.get({
@@ -22,7 +22,7 @@ export function RepoList() {
         } finally {
             setIsLoading(false)
         }
-    }
+    }, [repos]);
 
     useEffect(() => {
         getInfo();
@@ -31,8 +31,7 @@ export function RepoList() {
     return <List
         filtering={true}
         isLoading={isLoading}
-        searchBarPlaceholder="Search in repositories"
-    >
+        searchBarPlaceholder="Search in repositories">
         {repos.map((repo) => (
             <List.Item key={repo.name}
                        title={repo.name}

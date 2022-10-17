@@ -4,9 +4,9 @@
 
 - Clone repository in `raycast-extensions`
 - cd `extension-folder`
+- In raycast, type *Import Extensions*, enter, and choose `raycast-extensions`/`extension-folder`
 - npm ci
 - npm run build
-- In raycast, type *Import Extensions*, enter, and choose `raycast-extensions`/`extension-folder`
 
 ## Extensions
 

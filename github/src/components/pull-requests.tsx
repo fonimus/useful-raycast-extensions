@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useCallback, useState} from "react";
 import {Label, PullRequest} from "@octokit/webhooks-types";
 import {Action, ActionPanel, Icon, List} from "@raycast/api";
 import {useCachedState} from "@raycast/utils";
@@ -8,11 +8,10 @@ export function PullRequests(props: { repo?: string }) {
     const [isLoading, setIsLoading] = useState(false);
     const [navigation, setNavigation] = useState(props.repo);
     const [pulls, setPulls] = useState<PullRequest[]>([]);
-
     const [showBot, setShowBot] = useCachedState<boolean>('show-bot', false);
     const [showBody, setShowBody] = useCachedState<boolean>('show-body', false);
 
-    async function getDetails(state: string, page = 0) {
+    const getDetails = useCallback(async (state: string, page = 0) => {
         setIsLoading(true)
         const filteredRepositories = repoFromPrefs()
             .filter(repo => !props.repo || repo.name === props.repo)
@@ -35,13 +34,13 @@ export function PullRequests(props: { repo?: string }) {
         } finally {
             setIsLoading(false)
         }
-    }
+    }, []);
 
-    function getPulls() {
+    const getPulls = useCallback(() => {
         return pulls.filter((pull) => pull.user.type !== 'Bot' || showBot)
-    }
+    }, [pulls, showBot]);
 
-    function onChange(number: string | null) {
+    const onChange = useCallback((number: string | null) => {
         if (!number) {
             return
         }
@@ -50,7 +49,7 @@ export function PullRequests(props: { repo?: string }) {
                 setNavigation(pull.head.repo.name)
             }
         }
-    }
+    }, [pulls]);
 
     return <List
         filtering={true}
@@ -67,8 +66,7 @@ export function PullRequests(props: { repo?: string }) {
                     <List.Dropdown.Item title="All" value="all"/>
                 </List.Dropdown.Section>
             </List.Dropdown>
-        }
-    >
+        }>
         <List.EmptyView
             title={`No pull requests found${showBot ? "" : " (bot are not shown)"}`}
             actions={
@@ -143,7 +141,7 @@ export function PullRequests(props: { repo?: string }) {
                                }
                            />
                        }
-            ></List.Item>
+            />
         ))}
     </List>
 }

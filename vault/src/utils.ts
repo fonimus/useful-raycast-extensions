@@ -73,7 +73,6 @@ export function parseTokenFromCache(): VaultTokenCache | undefined {
 }
 
 export async function getVaultClient(): Promise<NodeVault.client> {
-    console.info('Getting vault client')
     let tokenCache = parseTokenFromCache();
 
     // check cache expiration
@@ -85,6 +84,7 @@ export async function getVaultClient(): Promise<NodeVault.client> {
             tokenCache = undefined
         }
     }
+
     // get token if needed
     if (!tokenCache) {
         console.info('Login with ldap...')
@@ -105,6 +105,8 @@ export async function getVaultClient(): Promise<NodeVault.client> {
         cache.set(VAULT_TOKEN_CACHE_KEY, JSON.stringify(tokenCache));
         console.info('Logged successfully, saving token in cache')
     }
+
+    // return node vault client
     return NodeVault({
         apiVersion: 'v1',
         endpoint: vaultUrl,

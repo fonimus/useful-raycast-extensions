@@ -2,7 +2,7 @@ import {useState} from "react";
 import {VaultListEntry} from "../interfaces";
 import {callTree, getTechnicalPaths} from "../utils";
 import {Action, ActionPanel, Icon, List} from "@raycast/api";
-import {configuration, copyToken, openVault, reload, root} from "./actions";
+import {Configuration, CopyToken, OpenVault, Reload, Root} from "./actions";
 import {VaultDisplay} from "./display";
 import {usePromise} from "@raycast/utils";
 
@@ -17,9 +17,12 @@ export function VaultTree(props: { path: string }) {
     return <List
         filtering={true}
         isLoading={isLoading}
-        navigationTitle={props.path}
-    >
-        <List.EmptyView actions={<ActionPanel>{configuration()}</ActionPanel>}/>
+        navigationTitle={props.path}>
+
+        <List.EmptyView actions={
+            <ActionPanel><Configuration/></ActionPanel>
+        }/>
+
         {keys.filter((entry) => getTechnicalPaths().indexOf(entry.label) === -1 || showTechnical).map((entry) => (
             <List.Item key={entry.key}
                        title={entry.label}
@@ -32,20 +35,19 @@ export function VaultTree(props: { path: string }) {
                                                                                         showGoToRoot/>}/>}
                                    {entry.folder && <Action.Push icon={Icon.ArrowDown} title="Go Down"
                                                                  target={<VaultTree path={entry.key}/>}/>}
-                                   {props.path !== '/' && root()}
+                                   {props.path !== '/' && <Root/>}
                                </ActionPanel.Section>
-                               <ActionPanel.Section title="Copy">{copyToken()}</ActionPanel.Section>
+                               <ActionPanel.Section title="Copy">{CopyToken()}</ActionPanel.Section>
                                <ActionPanel.Section title="Display">
                                    <Action icon={showTechnical ? Icon.EyeDisabled : Icon.Eye}
                                            title={showTechnical ? 'Hide technical' : 'Show technical'}
                                            shortcut={{modifiers: ["cmd"], key: "i"}}
                                            onAction={() => setShowTechnical(!showTechnical)}/>
-                                   {openVault()}
+                                   <OpenVault path={entry.key}/>
                                </ActionPanel.Section>
-                               {configuration()}
-                               {reload(revalidate)}
-                           </ActionPanel>
-                       }
+                               <Configuration/>
+                               <Reload revalidate={revalidate}/>
+                           </ActionPanel>}
             ></List.Item>
         ))}
     </List>
