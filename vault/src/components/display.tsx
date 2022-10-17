@@ -10,8 +10,8 @@ import {
     Toast,
     useNavigation
 } from "@raycast/api";
-import {useCachedState} from "@raycast/utils";
-import {useEffect, useState} from "react";
+import {useCachedState, usePromise} from "@raycast/utils";
+import {useState} from "react";
 import {DeleteMode, DisplayMode, VaultEntry, VaultReadMetadataResponse,} from "../interfaces";
 import {
     callDelete,
@@ -25,7 +25,7 @@ import {
     stringify
 } from "../utils";
 import {VaultEdit} from "./edit";
-import {configuration, copyToken, openVault, root} from "./actions";
+import {configuration, copyToken, openVault, reload, root} from "./actions";
 import ActionStyle = Alert.ActionStyle;
 
 export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
@@ -40,9 +40,8 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
     const [withDetails, setWithDetails] = useCachedState<boolean>('with-details', true);
     const [displayMode, setDisplayMode] = useCachedState<DisplayMode>('display-mode', DisplayMode.list);
 
-    async function getSecret() {
-        setIsLoading(true);
-        try {
+    const {isLoading: loadingGetSecret, revalidate} = usePromise(
+        async () => {
             const metadataResponse = await callReadMetadata(props.path);
             setMetadata(metadataResponse)
             if (metadataResponse.current_version.destroyed || metadataResponse.current_version.deletion_time !== '') {
@@ -63,36 +62,27 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                 }));
                 setResult("````json\n" + stringify(secret) + "\n````");
             }
-        } catch (error) {
-            await showToast({
-                style: Toast.Style.Failure,
-                title: 'Getting secret',
-                message: String(error)
-            });
-            pop()
-        } finally {
-            setIsLoading(false);
         }
-    }
+    );
 
     async function undeleteSecret() {
         setIsLoading(true)
         const toast = await showToast({
             style: Toast.Style.Animated,
-            title: 'Undeleting secret',
+            title: 'Restoring secret',
         });
 
         try {
             await callUndelete(props.path, metadata?.current_version.version);
 
             toast.style = Toast.Style.Success;
-            toast.message = 'Secret undeleted';
+            toast.message = 'Secret restored';
 
             // redirect to last view after 1 sec
-            setTimeout(() => push(<VaultDisplay path={props.path}/>), 1000)
+            push(<VaultDisplay path={props.path}/>)
         } catch (error) {
             toast.style = Toast.Style.Failure;
-            toast.message = 'Failed to delete secret\nPath: ' + props.path + '\n' + String(error);
+            toast.message = 'Failed to restore secret\nPath: ' + props.path + '\n' + String(error);
         } finally {
             setIsLoading(false);
         }
@@ -135,14 +125,13 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                     style: ActionStyle.Cancel
                 }
             })) {
-
                 await callDelete(props.path, deleteMode, metadata?.current_version.version);
 
                 toast.style = Toast.Style.Success;
                 toast.message = 'Secret deleted';
 
                 // redirect to last view after 1 sec
-                setTimeout(() => pop(), 1000)
+                pop()
             } else {
                 toast.hide()
             }
@@ -153,11 +142,6 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
             setIsLoading(false);
         }
     }
-
-
-    useEffect(() => {
-        getSecret();
-    }, []);
 
     function generateActions(entry?: VaultEntry) {
         return <ActionPanel>
@@ -185,6 +169,7 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                             onAction={() => metadata?.current_version.deleted ? undeleteSecret() : deleteSecret(DeleteMode.deleteVersion)}/>}
                 {!metadata?.current_version.destroyed &&
                     <Action icon={Icon.Trash} title="Destroy version"
+                            shortcut={{modifiers: ["ctrl", "opt"], key: "x"}}
                             onAction={() => deleteSecret(DeleteMode.destroyVersion)}/>}
                 <Action icon={Icon.Trash} title="Destroy all versions"
                         onAction={() => deleteSecret(DeleteMode.destroyAllVersions)}/>
@@ -203,11 +188,16 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                 {openVault(`/secret/show/${props.path}`)}
             </ActionPanel.Section>
             {configuration()}
+            {reload(revalidate)}
         </ActionPanel>
     }
 
+    function loading(): boolean {
+        return isLoading || loadingGetSecret
+    }
+
     return displayMode === DisplayMode.json ?
-        <Detail isLoading={isLoading}
+        <Detail isLoading={loading()}
                 markdown={result}
                 navigationTitle={metadata && props.path + " (v" + metadata.current_version.version + ")"}
                 actions={generateActions()}
@@ -236,9 +226,9 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
         />
         :
         <List
+            isLoading={loading()}
             isShowingDetail={withDetails}
             filtering={true}
-            isLoading={isLoading}
             navigationTitle={metadata && props.path + " (v" + metadata.current_version.version + ")"}
             searchBarPlaceholder="Search in secret"
         >

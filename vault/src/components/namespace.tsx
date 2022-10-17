@@ -6,7 +6,7 @@ import {copyToken, openVault} from "./actions";
 export function VaultNamespace() {
     const {push} = useNavigation();
 
-    async function setNamespaceAndGoToTree(values: { namespace: string; }) {
+    function setNamespaceAndGoToTree(values: { namespace: string; }) {
         setVaultNamespace(values.namespace)
         push(<VaultTree path={'/'}/>)
     }

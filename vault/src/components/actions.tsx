@@ -11,6 +11,14 @@ export function configuration() {
     </ActionPanel.Section>
 }
 
+export function reload(revalidate: () => Promise<void>) {
+    return <ActionPanel.Section title="Reload">
+        <Action icon={Icon.RotateClockwise} title={"Reload"}
+                shortcut={{modifiers: ["cmd"], key: "r"}}
+                onAction={revalidate}/>
+    </ActionPanel.Section>
+}
+
 export function copyToken() {
     return <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy token"
                                    shortcut={{modifiers: ["cmd"], key: "t"}}
@@ -25,6 +33,6 @@ export function openVault(path = '') {
 
 export function root() {
     return <Action.Push icon={Icon.ArrowLeft} title="Go to root"
-                        shortcut={{modifiers: ["cmd"], key: "r"}}
+                        shortcut={{modifiers: ["opt", "shift"], key: "arrowLeft"}}
                         target={<VaultTree path={'/'}/>}/>
 }

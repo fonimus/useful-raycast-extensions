@@ -1,34 +1,18 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {VaultListEntry} from "../interfaces";
 import {callTree, getTechnicalPaths} from "../utils";
-import {Action, ActionPanel, Icon, List, showToast, Toast} from "@raycast/api";
-import {configuration, copyToken, openVault, root} from "./actions";
+import {Action, ActionPanel, Icon, List} from "@raycast/api";
+import {configuration, copyToken, openVault, reload, root} from "./actions";
 import {VaultDisplay} from "./display";
+import {usePromise} from "@raycast/utils";
 
 export function VaultTree(props: { path: string }) {
-    const [isLoading, setIsLoading] = useState(false);
     const [showTechnical, setShowTechnical] = useState(false);
     const [keys, setKeys] = useState<VaultListEntry[]>([]);
 
-    async function tree() {
-        setIsLoading(true);
-        try {
-            setKeys(await callTree(props.path))
-        } catch (error) {
-            await showToast({
-                style: Toast.Style.Failure,
-                title: 'Building secret tree',
-                message: 'Failed to build secret tree\nPath: ' + props.path + '\n' + String(error)
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
-    useEffect(() => {
-        console.info('Init tree')
-        tree();
-    }, []);
+    const {isLoading, revalidate} = usePromise(async () => {
+        setKeys(await callTree(props.path));
+    });
 
     return <List
         filtering={true}
@@ -59,6 +43,7 @@ export function VaultTree(props: { path: string }) {
                                    {openVault()}
                                </ActionPanel.Section>
                                {configuration()}
+                               {reload(revalidate)}
                            </ActionPanel>
                        }
             ></List.Item>
