@@ -179,6 +179,8 @@ export function PullRequests(props: { repo?: string }) {
                                                          url={pull.html_url}/>
                                    <Action icon={Icon.Check} title="Approve"
                                            onAction={() => approve(pull)}/>
+                               </ActionPanel.Section>
+                               <ActionPanel.Section title="Display">
                                    <Action title={withDetails ? "Hide details panel" : "Show details panel"}
                                            icon={withDetails ? Icon.EyeDisabled : Icon.Eye}
                                            shortcut={{modifiers: ["cmd"], key: "i"}}
@@ -192,6 +194,11 @@ export function PullRequests(props: { repo?: string }) {
                                            icon={showBot ? Icon.EyeDisabled : Icon.Eye}
                                            shortcut={{modifiers: ["cmd"], key: "f"}}
                                            onAction={() => setShowBot(!showBot)}/>
+                               </ActionPanel.Section>
+                               <ActionPanel.Section title="Copy">
+                                   <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy url"
+                                                           shortcut={{modifiers: ["cmd", "opt"], key: "c"}}
+                                                           content={pull.html_url}/>
                                </ActionPanel.Section>
                            </ActionPanel>
                        }

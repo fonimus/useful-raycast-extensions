@@ -24,10 +24,6 @@ export function repoFromPrefs(): Repository[] {
     });
 }
 
-export function buildUrl(repo: string): string {
-    return `${preferences.url.replace(/\/$/, '')}/${repo}`;
-}
-
 export function duration(date: string) {
     if (date === '') {
         return

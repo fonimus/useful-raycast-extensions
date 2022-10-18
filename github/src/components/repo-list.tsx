@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from "react";
 import {Repository} from "@octokit/webhooks-types";
 import {Action, ActionPanel, Icon, List} from "@raycast/api";
-import {buildUrl, githubClient, repoFromPrefs} from "../utils";
+import {githubClient, repoFromPrefs} from "../utils";
 import {PullRequests} from "./pull-requests";
 
 export function RepoList() {
@@ -22,7 +22,19 @@ export function RepoList() {
         } finally {
             setIsLoading(false)
         }
-    }, [repos]);
+    }, []);
+
+    const getAccessories = useCallback((repo: Repository) => {
+        const result = []
+        result.push({text: repo.owner.login})
+        if (repo.stargazers_count !== undefined) {
+            result.push({
+                icon: Icon.Star,
+                text: `${repo.stargazers_count}`
+            })
+        }
+        return result;
+    }, []);
 
     useEffect(() => {
         getInfo();
@@ -37,10 +49,7 @@ export function RepoList() {
                        title={repo.name}
                        subtitle={repo.description || ''}
                        icon={Icon.Link}
-                       accessories={repo.stargazers_count !== undefined ? [{
-                           icon: Icon.Star,
-                           text: `${repo.stargazers_count}`
-                       }] : []}
+                       accessories={getAccessories(repo)}
                        actions={
                            <ActionPanel>
                                <ActionPanel.Section title="Navigation">
@@ -49,12 +58,12 @@ export function RepoList() {
                                                 target={<PullRequests repo={repo.name}/>}/>
                                    <Action.OpenInBrowser title="Open in browser"
                                                          shortcut={{modifiers: ["cmd"], key: "o"}}
-                                                         url={buildUrl(repo.name)}/>
+                                                         url={repo.html_url}/>
                                </ActionPanel.Section>
                                <ActionPanel.Section title="Copy">
                                    <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy url"
                                                            shortcut={{modifiers: ["cmd", "opt"], key: "c"}}
-                                                           content={buildUrl(repo.name)}/>
+                                                           content={repo.html_url}/>
                                </ActionPanel.Section>
                            </ActionPanel>
                        }
