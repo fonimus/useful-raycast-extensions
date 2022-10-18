@@ -11,12 +11,15 @@ type PullRequestDisplay = PullRequest & {
 export function PullRequests(props: { repo?: string }) {
     const [isLoading, setIsLoading] = useState(false);
     const [navigation, setNavigation] = useState(props.repo);
+    const [state, setState] = useState('open');
     const [pulls, setPulls] = useState<PullRequestDisplay[]>([]);
     const [withDetails, setWithDetails] = useCachedState<boolean>('with-details', false);
     const [showBot, setShowBot] = useCachedState<boolean>('show-bot', false);
     const [showBody, setShowBody] = useCachedState<boolean>('show-body', false);
 
-    const getDetails = useCallback(async (state: string, page = 0) => {
+    const getPullRequests = useCallback(async (state: string, page = 0) => {
+        console.info("Get pull requests [state=" + state + ", page=" + page + "] for " +
+            (props.repo ? props.repo : 'all'))
         setIsLoading(true)
         const filteredRepositories = repoFromPrefs().filter(repo => !props.repo || repo.name === props.repo);
         try {
@@ -27,43 +30,45 @@ export function PullRequests(props: { repo?: string }) {
                 page: page,
                 per_page: 20,
             }).then(value => value.data as PullRequestDisplay[]))
-            const allPulls = (await Promise.all(listPullsPromises)).flatMap(value => value)
-            setPulls(allPulls.sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)))
+            const allPulls = (await Promise.all(listPullsPromises))
+                .flatMap(value => value)
+                .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+            setPulls(allPulls)
+
+            // compute approvals
+            const approvalPromises = []
+            for (const pull of allPulls) {
+                approvalPromises.push(githubClient.rest.pulls.listReviews({
+                    owner: pull.head.repo.owner.login,
+                    repo: pull.head.repo.name,
+                    pull_number: pull.number
+                }).then(value => {
+                    let approvals = 0
+                    for (const review of value.data) {
+                        if (review.state === "APPROVED") {
+                            approvals++;
+                        }
+                    }
+                    pull.approvals = approvals
+                    setPulls(prevState => {
+                        return prevState.map(item => {
+                            if (pull.id === item.id) {
+                                return pull
+                            }
+                            return item;
+                        });
+                    })
+                }));
+            }
+            await Promise.all(approvalPromises);
         } catch (e) {
             console.error("Unable to list pull requests for : " + filteredRepositories, e)
-        } finally {
-            setIsLoading(false)
         }
-    }, []);
-
-    const computeApprovals = useCallback(async () => {
-        if (!pulls.length) {
-            return
-        }
-        const approvalPromises = []
-        setIsLoading(true)
-        for (const pull of pulls) {
-            approvalPromises.push(githubClient.rest.pulls.listReviews({
-                owner: pull.head.repo.owner.login,
-                repo: pull.head.repo.name,
-                pull_number: pull.number
-            }).then(value => {
-                let approvals = 0
-                for (const review of value.data) {
-                    if (review.state === "APPROVED") {
-                        approvals++;
-                    }
-                }
-                pull.approvals = approvals
-            }));
-        }
-        await Promise.all(approvalPromises).finally(() => setIsLoading(false));
-        setPulls(pulls)
-    }, [pulls]);
+    }, [props.repo]);
 
     useEffect(() => {
-        computeApprovals()
-    }, [pulls]);
+        getPullRequests(state).finally(() => setIsLoading(false));
+    }, [getPullRequests, state]);
 
     const getPulls = useCallback(() => {
         return pulls.filter((pull) => pull.user.type !== 'Bot' || showBot)
@@ -93,7 +98,7 @@ export function PullRequests(props: { repo?: string }) {
         }
         result.push({text: `#${pull.number}`});
         return result;
-    }, [withDetails, pulls]);
+    }, [withDetails]);
 
     const approve = useCallback(async (pull: PullRequestDisplay) => {
         setIsLoading(true)
@@ -134,7 +139,7 @@ export function PullRequests(props: { repo?: string }) {
         } finally {
             setIsLoading(false);
         }
-    }, [pulls]);
+    }, []);
 
     return <List
         filtering={true}
@@ -144,7 +149,7 @@ export function PullRequests(props: { repo?: string }) {
         navigationTitle={navigation}
         onSelectionChange={onChange}
         searchBarAccessory={
-            <List.Dropdown tooltip="Filter pull requests" onChange={newValue => getDetails(newValue)}>
+            <List.Dropdown tooltip="Filter pull requests" value={state} onChange={newValue => setState(newValue)}>
                 <List.Dropdown.Section title="State">
                     <List.Dropdown.Item title="Open" value="open"/>
                     <List.Dropdown.Item title="Closed" value="closed"/>
@@ -159,8 +164,8 @@ export function PullRequests(props: { repo?: string }) {
                     <ActionPanel.Section title="Navigation">
                         <Action title={showBot ? "Hide bot PR" : "Show bot PR"}
                                 icon={showBot ? Icon.EyeDisabled : Icon.Eye}
-                                shortcut={{modifiers: ["cmd"], key: "i"}}
-                                onAction={() => setShowBot((x) => !x)}/>
+                                shortcut={{modifiers: ["cmd"], key: "f"}}
+                                onAction={() => setShowBot(!showBot)}/>
                     </ActionPanel.Section>
                 </ActionPanel>
             }

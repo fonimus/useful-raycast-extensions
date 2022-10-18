@@ -8,10 +8,11 @@ export function RepoList() {
     const [isLoading, setIsLoading] = useState(false);
     const [repos, setRepos] = useState<Repository[]>(repoFromPrefs());
 
-    const getInfo = useCallback(async () => {
+    const getRepositoryInfo = useCallback(async () => {
+        console.info('Get repositories')
         setIsLoading(true)
         try {
-            const promises = repos.map(repo => githubClient.rest.repos.get({
+            const promises = repoFromPrefs().map(repo => githubClient.rest.repos.get({
                 owner: repo.owner.login,
                 repo: repo.name,
             }).then(value => value.data))
@@ -19,10 +20,12 @@ export function RepoList() {
             setRepos(results as Repository[])
         } catch (e) {
             console.error("Unable to get repositories info", e)
-        } finally {
-            setIsLoading(false)
         }
     }, []);
+
+    useEffect(() => {
+        getRepositoryInfo().finally(() => setIsLoading(false));
+    }, [getRepositoryInfo]);
 
     const getAccessories = useCallback((repo: Repository) => {
         const result = []
@@ -34,10 +37,6 @@ export function RepoList() {
             })
         }
         return result;
-    }, []);
-
-    useEffect(() => {
-        getInfo();
     }, []);
 
     return <List
