@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from "react";
 import {Repository} from "@octokit/webhooks-types";
 import {Action, ActionPanel, Icon, List} from "@raycast/api";
-import {buildUrl, getOwner, githubClient, repoFromPrefs} from "../utils";
+import {buildUrl, githubClient, repoFromPrefs} from "../utils";
 import {PullRequests} from "./pull-requests";
 
 export function RepoList() {
@@ -12,7 +12,7 @@ export function RepoList() {
         setIsLoading(true)
         try {
             const promises = repos.map(repo => githubClient.rest.repos.get({
-                owner: getOwner(),
+                owner: repo.owner.login,
                 repo: repo.name,
             }).then(value => value.data))
             const results = await Promise.all(promises);

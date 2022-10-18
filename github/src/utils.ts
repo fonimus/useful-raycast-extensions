@@ -5,7 +5,6 @@ import hdate from "human-date";
 
 export interface RepoPreferences {
     url: string;
-    org: string;
     token: string;
     repositories: string;
 }
@@ -15,16 +14,18 @@ export const githubClient = new Octokit({auth: preferences.token});
 
 export function repoFromPrefs(): Repository[] {
     return preferences.repositories.split(' ').sort().map((repo) => {
-        return {name: repo} as Repository
+        const ownerAndName = repo.split('/')
+        return {
+            owner: {
+                login: ownerAndName[0]
+            },
+            name: ownerAndName[1]
+        } as Repository
     });
 }
 
-export function getOwner(): string {
-    return preferences.org;
-}
-
 export function buildUrl(repo: string): string {
-    return `${preferences.url}${preferences.org}/${repo}`;
+    return `${preferences.url.replace(/\/$/, '')}/${repo}`;
 }
 
 export function duration(date: string) {

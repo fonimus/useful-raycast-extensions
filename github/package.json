@@ -32,13 +32,6 @@
       "default": "https://github.com/"
     },
     {
-      "name": "org",
-      "title": "Github organization",
-      "description": "Github organization",
-      "type": "textfield",
-      "required": true
-    },
-    {
       "name": "token",
       "title": "Github token",
       "description": "Github personal generated token",
@@ -48,7 +41,7 @@
     {
       "name": "repositories",
       "title": "Github repositories",
-      "description": "Github repositories separated by space",
+      "description": "Github repositories separated by space (format: owner/name)",
       "type": "textfield",
       "required": true
     }

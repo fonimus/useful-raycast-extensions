@@ -2,7 +2,7 @@ import {useCallback, useEffect, useState} from "react";
 import {Label, PullRequest} from "@octokit/webhooks-types";
 import {Action, ActionPanel, Alert, confirmAlert, Icon, List, showToast, Toast} from "@raycast/api";
 import {useCachedState} from "@raycast/utils";
-import {duration, getOwner, githubClient, repoFromPrefs} from "../utils";
+import {duration, githubClient, repoFromPrefs} from "../utils";
 
 type PullRequestDisplay = PullRequest & {
     approvals: number
@@ -18,13 +18,11 @@ export function PullRequests(props: { repo?: string }) {
 
     const getDetails = useCallback(async (state: string, page = 0) => {
         setIsLoading(true)
-        const filteredRepositories = repoFromPrefs()
-            .filter(repo => !props.repo || repo.name === props.repo)
-            .map(repo => repo.name);
+        const filteredRepositories = repoFromPrefs().filter(repo => !props.repo || repo.name === props.repo);
         try {
             const listPullsPromises = filteredRepositories.map(repo => githubClient.rest.pulls.list({
-                owner: getOwner(),
-                repo: repo,
+                owner: repo.owner.login,
+                repo: repo.name,
                 state: state as "open" | "closed" | "all",
                 page: page,
                 per_page: 20,
@@ -46,7 +44,7 @@ export function PullRequests(props: { repo?: string }) {
         setIsLoading(true)
         for (const pull of pulls) {
             approvalPromises.push(githubClient.rest.pulls.listReviews({
-                owner: getOwner(),
+                owner: pull.head.repo.owner.login,
                 repo: pull.head.repo.name,
                 pull_number: pull.number
             }).then(value => {
@@ -118,7 +116,7 @@ export function PullRequests(props: { repo?: string }) {
                 }
             })) {
                 await githubClient.rest.pulls.createReview({
-                    owner: getOwner(),
+                    owner: pull.head.repo.owner.login,
                     repo: pull.head.repo.name,
                     pull_number: pull.number,
                     event: 'APPROVE'
