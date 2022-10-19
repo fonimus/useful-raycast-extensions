@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {VaultListEntry} from "../interfaces";
 import {callTree, getTechnicalPaths} from "../utils";
-import {Action, ActionPanel, Icon, List} from "@raycast/api";
+import {Action, ActionPanel, Color, Icon, List} from "@raycast/api";
 import {Configuration, CopyToken, OpenVault, Reload, Root} from "./actions";
 import {VaultDisplay} from "./display";
 import {usePromise} from "@raycast/utils";
@@ -26,7 +26,10 @@ export function VaultTree(props: { path: string }) {
         {keys.filter((entry) => getTechnicalPaths().indexOf(entry.label) === -1 || showTechnical).map((entry) => (
             <List.Item key={entry.key}
                        title={entry.label}
-                       icon={entry.folder ? Icon.Folder : Icon.Document}
+                       icon={entry.folder ? {source: Icon.Folder, tintColor: Color.Blue} : {
+                           source: Icon.Document,
+                           tintColor: Color.Green
+                       }}
                        actions={
                            <ActionPanel>
                                <ActionPanel.Section title="Navigation">
