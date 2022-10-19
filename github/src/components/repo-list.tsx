@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {Repository} from "@octokit/webhooks-types";
-import {Action, ActionPanel, Icon, List} from "@raycast/api";
+import {Action, ActionPanel, Color, Icon, List} from "@raycast/api";
 import {githubClient, repoFromPrefs} from "../utils";
 import {PullRequests} from "./pull-requests";
 
@@ -32,7 +32,7 @@ export function RepoList() {
         result.push({text: repo.owner.login})
         if (repo.stargazers_count !== undefined) {
             result.push({
-                icon: Icon.Star,
+                icon: {source: Icon.Star, tintColor: Color.Yellow},
                 text: `${repo.stargazers_count}`
             })
         }

@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
 import {Label, PullRequest} from "@octokit/webhooks-types";
-import {Action, ActionPanel, Alert, confirmAlert, Icon, List, showToast, Toast} from "@raycast/api";
+import {Action, ActionPanel, Alert, Color, confirmAlert, Icon, Image, List, showToast, Toast} from "@raycast/api";
 import {useCachedState} from "@raycast/utils";
 import {duration, githubClient, repoFromPrefs} from "../utils";
 
@@ -93,10 +93,15 @@ export function PullRequests(props: { repo?: string }) {
             }
             result.push({text: duration(pull.created_at)})
             if (pull.approvals) {
-                result.push({icon: Icon.Check, text: '' + pull.approvals, tooltip: 'Approved'});
+                result.push({
+                    icon: {source: Icon.Check, tintColor: Color.Green},
+                    text: '' + pull.approvals,
+                    tooltip: 'Approved'
+                });
             }
         }
         result.push({text: `#${pull.number}`});
+        result.push({icon: {source: pull.user.avatar_url, mask: Image.Mask.Circle}, tooltip: pull.user.login});
         return result;
     }, [withDetails]);
 
@@ -221,8 +226,12 @@ export function PullRequests(props: { repo?: string }) {
                                                text={`${pull.number}`} color={"#35dfee"}/>
                                        </List.Item.Detail.Metadata.TagList>
                                        <List.Item.Detail.Metadata.Label title="State" text={pull.state}/>
-                                       <List.Item.Detail.Metadata.Label title="Creator" text={pull.user.login}
-                                                                        icon={pull.user.avatar_url}/>
+                                       <List.Item.Detail.Metadata.Label
+                                           title="Creator" text={pull.user.login}
+                                           icon={{
+                                               source: pull.user.avatar_url,
+                                               mask: Image.Mask.Circle
+                                           }}/>
                                        {pull.approvals !== undefined && <List.Item.Detail.Metadata.Separator/>}
                                        {pull.approvals !== undefined &&
                                            <List.Item.Detail.Metadata.Label title="Approvals"
