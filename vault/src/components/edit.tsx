@@ -3,7 +3,6 @@ import {useCallback, useState} from "react";
 import {callWrite, stringify} from "../utils";
 import {VaultDisplay} from "./display";
 import {CopyToken} from "./actions";
-import ActionStyle = Alert.ActionStyle;
 
 export function VaultEdit(props: { path: string, currentSecret: object }) {
     const {push, pop} = useNavigation();
@@ -27,12 +26,12 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
                 message: "This will create new version for this path",
                 primaryAction: {
                     title: "Erase",
-                    style: ActionStyle.Destructive
+                    style: Alert.ActionStyle.Destructive
                 },
                 icon: Icon.SaveDocument,
                 dismissAction: {
                     title: "Cancel",
-                    style: ActionStyle.Cancel
+                    style: Alert.ActionStyle.Cancel
                 }
             })) {
 

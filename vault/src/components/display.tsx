@@ -25,7 +25,6 @@ import {
 } from "../utils";
 import {VaultEdit} from "./edit";
 import {Configuration, CopyToken, OpenVault, Reload, Root} from "./actions";
-import ActionStyle = Alert.ActionStyle;
 
 export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
     const {push, pop} = useNavigation();
@@ -83,7 +82,7 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
         } finally {
             setIsLoading(false);
         }
-    }, [metadata]);
+    }, [props.path, push, metadata]);
 
     const deleteSecret = useCallback(async (deleteMode: DeleteMode) => {
         setIsLoading(true)
@@ -114,12 +113,12 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                 message: message,
                 primaryAction: {
                     title: "Delete",
-                    style: ActionStyle.Destructive
+                    style: Alert.ActionStyle.Destructive
                 },
                 icon: Icon.DeleteDocument,
                 dismissAction: {
                     title: 'Cancel',
-                    style: ActionStyle.Cancel
+                    style: Alert.ActionStyle.Cancel
                 }
             })) {
                 await callDelete(props.path, deleteMode, metadata?.current_version.version);
@@ -130,7 +129,7 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
                 // redirect to last view after 1 sec
                 pop()
             } else {
-                toast.hide()
+                await toast.hide()
             }
         } catch (error) {
             toast.style = Toast.Style.Failure;
@@ -138,7 +137,7 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [props.path, pop, metadata]);
 
     const generateActions = useCallback((entry?: VaultEntry) => {
         return <ActionPanel>
@@ -195,7 +194,7 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
             <Configuration/>
             <Reload revalidate={revalidate}/>
         </ActionPanel>
-    }, [secret, metadata, displayMode]);
+    }, [props.path, props.showGoToRoot, secret, metadata, displayMode, deleteSecret, undeleteSecret, revalidate, setWithDetails, setDisplayMode]);
 
     return displayMode === DisplayMode.json ?
         <Detail isLoading={isLoading || loadingGetSecret}
