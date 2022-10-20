@@ -10,6 +10,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [newSecret, setNewSecret] = useState<string>(stringify(props.currentSecret));
+    const [newSecretError, setNewSecretError] = useState<string | undefined>();
 
     const saveSecret = useCallback(async (values: { newSecret: string; }) => {
         setIsLoading(true)
@@ -51,6 +52,16 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
         } finally {
             setIsLoading(false);
         }
+    }, [props.path, push]);
+
+    const onChangeNewSecret = useCallback((newValue: string) => {
+        setNewSecret(newValue)
+        try {
+            JSON.parse(newValue)
+            setNewSecretError(undefined)
+        } catch (error) {
+            setNewSecretError('Invalid json')
+        }
     }, []);
 
     return <Form
@@ -68,6 +79,7 @@ export function VaultEdit(props: { path: string, currentSecret: object }) {
             id="newSecret"
             title="New secret"
             value={newSecret}
-            onChange={setNewSecret}/>
+            error={newSecretError}
+            onChange={onChangeNewSecret}/>
     </Form>
 }
