@@ -1,4 +1,4 @@
-# Repo extension
+# Github extension
 
 > Extension to quickly consult team repositories and pull requests and open them
 
