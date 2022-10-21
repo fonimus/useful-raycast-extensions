@@ -178,7 +178,9 @@ export function PullRequests(props: { repo?: string }) {
         {getPulls().map((pull) => (
             <List.Item id={`${pull.number}`}
                        key={pull.number}
-                       title={pull.title}
+                       title={!pull.draft ? pull.title : ''}
+                       subtitle={pull.draft ? pull.title : ''}
+                       icon={pull.draft ? Icon.CircleProgress25 : undefined}
                        keywords={[`${pull.number}`]}
                        accessories={getAccessories(pull)}
                        actions={
@@ -226,6 +228,7 @@ export function PullRequests(props: { repo?: string }) {
                                                text={`${pull.number}`} color={"#35dfee"}/>
                                        </List.Item.Detail.Metadata.TagList>
                                        <List.Item.Detail.Metadata.Label title="State" text={pull.state}/>
+                                       <List.Item.Detail.Metadata.Label title="Draft" text={`${pull.draft}`}/>
                                        <List.Item.Detail.Metadata.Label
                                            title="Creator" text={pull.user.login}
                                            icon={{
