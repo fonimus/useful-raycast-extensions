@@ -5,6 +5,10 @@
   "description": "Github extension for raycast",
   "icon": "github.png",
   "author": "fonimus",
+  "owner": "fonimus-inc",
+  "categories": [
+    "Productivity"
+  ],
   "license": "MIT",
   "commands": [
     {

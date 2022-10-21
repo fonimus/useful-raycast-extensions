@@ -5,6 +5,10 @@
   "description": "Vault extension for raycast",
   "icon": "vault.png",
   "author": "fonimus",
+  "owner": "fonimus-inc",
+  "categories": [
+    "Productivity"
+  ],
   "license": "MIT",
   "commands": [
     {
