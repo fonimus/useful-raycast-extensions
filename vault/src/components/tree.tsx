@@ -1,14 +1,15 @@
 import {useCallback, useState} from "react";
 import {DeleteMode, VaultListEntry} from "../interfaces";
 import {callDelete, callTree, getTechnicalPaths} from "../utils";
-import {Action, ActionPanel, Alert, Color, confirmAlert, Icon, List, showToast, Toast} from "@raycast/api";
+import {Action, ActionPanel, Alert, Cache, Color, confirmAlert, Icon, List, showToast, Toast} from "@raycast/api";
 import {Configuration, CopyToken, OpenVault, Reload, Root} from "./actions";
 import {VaultDisplay} from "./display";
-import {usePromise} from "@raycast/utils";
+import {useCachedState, usePromise} from "@raycast/utils";
 
 export function VaultTree(props: { path: string }) {
     const [isLoading, setIsLoading] = useState(false);
-    const [showTechnical, setShowTechnical] = useState(false);
+    const [showTechnical, setShowTechnical] = useCachedState('show-technical', false, {cacheNamespace: 'tree'});
+    console.log(new Cache().get("show-technical"))
     const [keys, setKeys] = useState<VaultListEntry[]>([]);
 
     const {isLoading: isLoadingTree, revalidate} = usePromise(async () => {

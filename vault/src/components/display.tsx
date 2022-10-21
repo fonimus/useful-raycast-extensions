@@ -34,8 +34,8 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
     const [secretList, setSecretList] = useState<VaultEntry[]>([]);
     const [result, setResult] = useState<string | undefined>(undefined);
     const [metadata, setMetadata] = useState<VaultReadMetadataResponse | undefined>();
-    const [withDetails, setWithDetails] = useCachedState<boolean>('with-details', true);
-    const [displayMode, setDisplayMode] = useCachedState<DisplayMode>('display-mode', DisplayMode.list);
+    const [withDetails, setWithDetails] = useCachedState<boolean>('with-details', true, {cacheNamespace: 'display'});
+    const [displayMode, setDisplayMode] = useCachedState<DisplayMode>('display-mode', DisplayMode.list, {cacheNamespace: 'display'});
 
     const {isLoading: loadingGetSecret, revalidate} = usePromise(async () => {
         const metadataResponse = await callReadMetadata(props.path);
