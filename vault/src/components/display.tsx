@@ -68,7 +68,6 @@ export function VaultDisplay(props: { path: string, showGoToRoot?: boolean }) {
         });
 
         try {
-            console.log(metadata?.current_version.version)
             await callUndelete(props.path, metadata?.current_version.version);
 
             toast.style = Toast.Style.Success;
