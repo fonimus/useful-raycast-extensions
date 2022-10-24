@@ -28,14 +28,6 @@
   ],
   "preferences": [
     {
-      "name": "url",
-      "title": "Github url",
-      "description": "Github url",
-      "type": "textfield",
-      "required": true,
-      "default": "https://github.com/"
-    },
-    {
       "name": "token",
       "title": "Github token",
       "description": "Github personal generated token",

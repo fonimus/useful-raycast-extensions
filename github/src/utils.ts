@@ -3,13 +3,12 @@ import {Octokit} from "octokit";
 import {Repository} from "@octokit/webhooks-types";
 import hdate from "human-date";
 
-export interface RepoPreferences {
-    url: string;
+export interface GithubPreferences {
     token: string;
     repositories: string;
 }
 
-const preferences = getPreferenceValues<RepoPreferences>();
+const preferences = getPreferenceValues<GithubPreferences>();
 export const githubClient = new Octokit({auth: preferences.token});
 
 export function repoFromPrefs(): Repository[] {
