@@ -1,5 +1,5 @@
-import {PullRequests} from "./components/pull-requests";
+import { PullRequests } from "./components/pull-requests";
 
 export default function Pull() {
-    return <PullRequests/>;
+  return <PullRequests />;
 }

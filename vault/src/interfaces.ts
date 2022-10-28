@@ -4,60 +4,60 @@ export const VAULT_TOKEN_CACHE_KEY = "vault-token";
 export const VAULT_NAMESPACE_CACHE_KEY = "vault-namespace";
 
 export enum DisplayMode {
-    list = "list",
-    json = "json"
+  list = "list",
+  json = "json",
 }
 
 export enum DeleteMode {
-    deleteVersion = "deleteVersion",
-    destroyVersion = "destroyVersion",
-    destroyAllVersions = "destroyAllVersions"
+  deleteVersion = "deleteVersion",
+  destroyVersion = "destroyVersion",
+  destroyAllVersions = "destroyAllVersions",
 }
 
 export interface VaultTokenCache {
-    token: string;
-    expiration: number;
+  token: string;
+  expiration: number;
 }
 
 export interface VaultEntry {
-    key: string;
-    value: any;
+  key: string;
+  value: any;
 }
 
 export interface VaultListEntry {
-    key: string;
-    label: string;
-    folder: boolean;
+  key: string;
+  label: string;
+  folder: boolean;
 }
 
 export interface VaultLoginResponse {
-    auth: VaultLoginAuthResponse;
+  auth: VaultLoginAuthResponse;
 }
 
 export interface VaultLoginAuthResponse {
-    client_token: string;
-    lease_duration: number;
+  client_token: string;
+  lease_duration: number;
 }
 
 export interface VaultReadResponse {
-    data: any;
-    metadata: VaultMetaDataResponse;
+  data: any;
+  metadata: VaultMetaDataResponse;
 }
 
 export interface VaultReadMetadataResponse {
-    current_version: VaultVersion;
-    versions: VaultVersion[];
+  current_version: VaultVersion;
+  versions: VaultVersion[];
 }
 
 export interface VaultVersion {
-    version: number;
-    created_time: string;
-    deletion_time: string;
-    destroyed: boolean;
-    deleted: boolean;
+  version: number;
+  created_time: string;
+  deletion_time: string;
+  destroyed: boolean;
+  deleted: boolean;
 }
 
 export interface VaultMetaDataResponse {
-    version: number;
-    created_time: string;
+  version: number;
+  created_time: string;
 }

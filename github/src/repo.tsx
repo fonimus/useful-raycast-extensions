@@ -1,5 +1,5 @@
-import {RepoList} from "./components/repo-list";
+import { RepoList } from "./components/repo-list";
 
 export default function Repo() {
-    return <RepoList/>;
+  return <RepoList />;
 }
