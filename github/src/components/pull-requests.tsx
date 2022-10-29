@@ -209,8 +209,8 @@ export function PullRequests(props: { repo?: string }) {
           }
           keywords={[`${pull.number}`]}
           accessories={
-            withDetails || isLoading
-              ? [{ text: `#${pull.number}` }]
+            withDetails
+              ? []
               : [
                   // Bug: https://github.com/raycast/extensions/issues/3359
                   //...pull.labels.map(({ name }) => ({ text: name })),
