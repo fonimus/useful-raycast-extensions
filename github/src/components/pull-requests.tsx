@@ -212,8 +212,9 @@ export function PullRequests(props: { repo?: string }) {
             withDetails || isLoading
               ? [{ text: `#${pull.number}` }]
               : [
-                  ...pull.labels.map(({ name }) => ({ text: name })),
-                  { date: new Date(pull.created_at) },
+                  // Bug: https://github.com/raycast/extensions/issues/3359
+                  //...pull.labels.map(({ name }) => ({ text: name })),
+                  { text: duration(pull.created_at) },
                   { text: `#${pull.number}`.padStart(5, " ") },
                   {
                     icon: {
