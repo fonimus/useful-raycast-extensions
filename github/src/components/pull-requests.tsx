@@ -195,7 +195,7 @@ export function PullRequests(props: { repo?: string }) {
               : pull.approvals > 0
               ? {
                   source: Icon.CheckCircle,
-                  tintColor: Color.reen,
+                  tintColor: Color.Green,
                 }
               : pull.user.type === "Bot"
               ? {
