@@ -243,25 +243,25 @@ export function PullRequests(props: { repo?: string }) {
                       source: Icon.Tag,
                       tintColor: pull.labels.length ? Color.Green : Color.Red,
                     },
-                    tooltip: pul.labels.length ? pull.labels.map(({ name }) => name).join(", ") : "no labels",
+                    tooltip: pull.labels.length ? pull.labels.map(({ name }) => name).join(", ") : "no labels",
                   },
                   {
-                   icon: {
+                    icon: {
                       source: pull.user.avatar_url,
                       mask: Image.Mask.Circle,
                     },
-                   tooltip: pull.user.login,
+                    tooltip: pull.user.login,
                   },
-
+                ]
           }
-         actions={
+          actions={
             <ActionPanel>
               <ActionPanel.Section title="Navigation">
                 <Action.OpenInBrowser
                   title="Open"
                   shortcut={{
                     modifiers: ["cmd"],
-                    key: "o"
+                    key: "o",
                   }}
                   url={pull.html_url}
                 />
