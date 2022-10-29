@@ -190,14 +190,22 @@ export function PullRequests(props: { repo?: string }) {
             pull.draft
               ? {
                   source: Icon.CircleProgress25,
-                  tintColor: Color.Brown,
+                  tintColor: Color.SecondaryText,
                 }
               : pull.approvals > 0
               ? {
                   source: Icon.CheckCircle,
-                  tintColor: Color.Green,
+                  tintColor: Color.reen,
                 }
-              : undefined
+              : pull.user.type === "Bot"
+              ? {
+                  source: Icon.ComputerChip,
+                  tintColor: Color.Blue,
+                }
+              : {
+                  source: Icon.Clock,
+                  tintColor: Color.Orange,
+                }
           }
           keywords={[`${pull.number}`]}
           accessories={
