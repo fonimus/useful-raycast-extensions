@@ -42,6 +42,7 @@ export function PullRequests(props: { repo?: string }) {
         setPulls(allPulls);
 
         // compute approvals
+        const approvalByPull = new Map<PullRequestDisplay, number>();
         const approvalPromises = [];
         for (const pull of allPulls) {
           approvalPromises.push(
@@ -58,19 +59,20 @@ export function PullRequests(props: { repo?: string }) {
                     approvals++;
                   }
                 }
-                pull.approvals = approvals;
-                setPulls((prevState) => {
-                  return prevState.map((item) => {
-                    if (pull.id === item.id) {
-                      return pull;
-                    }
-                    return item;
-                  });
-                });
+                if (approvals > 0) {
+                  approvalByPull.set(pull, approvals);
+                }
               })
           );
         }
         await Promise.all(approvalPromises);
+
+        setPulls((prevState) => {
+          for (const prevStateElement of prevState) {
+            prevStateElement.approvals = approvalByPull.get(prevStateElement) || 0;
+          }
+          return prevState;
+        });
       } catch (e) {
         console.error("Unable to list pull requests for : " + filteredRepositories, e);
       }
@@ -93,40 +95,11 @@ export function PullRequests(props: { repo?: string }) {
       }
       for (const pull of pulls) {
         if (pull.number.toString() === number) {
-          setNavigation(pull.head.repo.name);
+          setNavigation(`#${pull.number} - ${pull.head.repo.name}`);
         }
       }
     },
     [pulls]
-  );
-
-  const getAccessories = useCallback(
-    (pull: PullRequestDisplay) => {
-      const result = [];
-      if (!withDetails) {
-        for (const label of pull.labels) {
-          result.push({ text: label.name });
-        }
-        result.push({ text: duration(pull.created_at) });
-        if (pull.approvals) {
-          result.push({
-            icon: { source: Icon.Check, tintColor: Color.Green },
-            text: "" + pull.approvals,
-            tooltip: "Approved",
-          });
-        }
-      }
-      result.push({ text: `#${pull.number}` });
-      result.push({
-        icon: {
-          source: pull.user.avatar_url,
-          mask: Image.Mask.Circle,
-        },
-        tooltip: pull.user.login,
-      });
-      return result;
-    },
-    [withDetails]
   );
 
   const approve = useCallback(async (pull: PullRequestDisplay) => {
@@ -213,9 +186,36 @@ export function PullRequests(props: { repo?: string }) {
           key={pull.number}
           title={!pull.draft ? pull.title : ""}
           subtitle={pull.draft ? pull.title : ""}
-          icon={pull.draft ? Icon.CircleProgress25 : undefined}
+          icon={
+            pull.draft
+              ? {
+                  source: Icon.CircleProgress25,
+                  tintColor: Color.Brown,
+                }
+              : pull.approvals > 0
+              ? {
+                  source: Icon.CheckCircle,
+                  tintColor: Color.Green,
+                }
+              : undefined
+          }
           keywords={[`${pull.number}`]}
-          accessories={getAccessories(pull)}
+          accessories={
+            withDetails || isLoading
+              ? [{ text: `#${pull.number}` }]
+              : [
+                  ...pull.labels.map(({ name }) => ({ text: name })),
+                  { date: new Date(pull.created_at) },
+                  { text: `#${pull.number}`.padStart(5, " ") },
+                  {
+                    icon: {
+                      source: pull.user.avatar_url,
+                      mask: Image.Mask.Circle,
+                    },
+                    tooltip: pull.user.login,
+                  },
+                ]
+          }
           actions={
             <ActionPanel>
               <ActionPanel.Section title="Navigation">
