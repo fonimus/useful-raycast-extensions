@@ -95,7 +95,7 @@ export function PullRequests(props: { repo?: string }) {
       }
       for (const pull of pulls) {
         if (pull.number.toString() === number) {
-          setNavigation(`#${pull.number} - ${pull.head.repo.name}`);
+          setNavigation(`#${pull.number} - ${pull.head.repo.owner.login}/${pull.head.repo.name}`);
         }
       }
     },
@@ -184,13 +184,37 @@ export function PullRequests(props: { repo?: string }) {
         <List.Item
           id={`${pull.number}`}
           key={pull.number}
-          title={!pull.draft ? pull.title : ""}
-          subtitle={pull.draft ? pull.title : ""}
+          title={
+            !pull.draft
+              ? {
+                  value: pull.title,
+                  tooltip: pull.approvals > 0 ? "Approved" : pull.user.type === "Bot" ? "Bot pull request" : "",
+                }
+              : ""
+          }
+          subtitle={
+            pull.draft
+              ? {
+                  value: pull.title,
+                  tooltip: pull.draft ? "Draft" : "",
+                }
+              : ""
+          }
           icon={
             pull.draft
               ? {
                   source: Icon.CircleProgress25,
                   tintColor: Color.SecondaryText,
+                }
+              : pull.merged_at
+              ? {
+                  source: Icon.CircleProgress100,
+                  tintColor: Color.Purple,
+                }
+              : pull.closed_at
+              ? {
+                  source: Icon.CircleProgress100,
+                  tintColor: Color.Red,
                 }
               : pull.approvals > 0
               ? {
@@ -212,28 +236,46 @@ export function PullRequests(props: { repo?: string }) {
             withDetails
               ? []
               : [
-                  // Bug: https://github.com/raycast/extensions/issues/3359
-                  //...pull.labels.map(({ name }) => ({ text: name })),
                   { text: duration(pull.created_at) },
-                  { text: `#${pull.number}`.padStart(5, " ") },
+                  { text: `#${pull.number}` },
                   {
                     icon: {
+                      source: Icon.Tag,
+                      tintColor: pull.labels.length ? Color.Green : Color.Red,
+                    },
+                    tooltip: pul.labels.length ? pull.labels.map(({ name }) => name).join(", ") : "no labels",
+                  },
+                  {
+                   icon: {
                       source: pull.user.avatar_url,
                       mask: Image.Mask.Circle,
                     },
-                    tooltip: pull.user.login,
+                   tooltip: pull.user.login,
                   },
-                ]
+
           }
-          actions={
+         actions={
             <ActionPanel>
               <ActionPanel.Section title="Navigation">
                 <Action.OpenInBrowser
-                  title="Open in browser"
-                  shortcut={{ modifiers: ["cmd"], key: "o" }}
+                  title="Open"
+                  shortcut={{
+                    modifiers: ["cmd"],
+                    key: "o"
+                  }}
                   url={pull.html_url}
                 />
-                <Action icon={Icon.Check} title="Approve" onAction={() => approve(pull)} />
+                <Action.OpenInBrowser
+                  title="Begin review"
+                  shortcut={{ modifiers: ["cmd"], key: "d" }}
+                  url={pull.html_url + "/files"}
+                />
+                <Action
+                  icon={Icon.Check}
+                  title="Approve"
+                  shortcut={{ modifiers: ["cmd", "shift"], key: "a" }}
+                  onAction={() => approve(pull)}
+                />
               </ActionPanel.Section>
               <ActionPanel.Section title="Display">
                 <Action
@@ -272,6 +314,7 @@ export function PullRequests(props: { repo?: string }) {
               markdown={showBody ? pull.body : undefined}
               metadata={
                 <List.Item.Detail.Metadata>
+                  <List.Item.Detail.Metadata.Label title="Owner" text={pull.head.repo.owner.login} />
                   <List.Item.Detail.Metadata.Label title="Repo" text={pull.head.repo.name} />
                   <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label title="Title" text={pull.title} />
