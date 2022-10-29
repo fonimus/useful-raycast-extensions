@@ -225,7 +225,7 @@ export async function callUndelete(path: string, version?: number) {
     path: "/secret/undelete" + path,
     method: "POST",
     json: {
-      versions: [versio],
+      versions: [version],
     },
   });
 }
