@@ -61,3 +61,23 @@ export interface VaultMetaDataResponse {
   version: number;
   created_time: string;
 }
+
+export interface VaultEntity {
+  id: string;
+  name: string;
+  creation_time: string;
+  aliases: VaultAlias[];
+  policies: string[];
+}
+
+export interface VaultAlias {
+  id: string;
+  mount_type: string;
+  name: string;
+}
+
+export interface VaultAuth {
+  name: string;
+  type: string;
+  accessor: string;
+}

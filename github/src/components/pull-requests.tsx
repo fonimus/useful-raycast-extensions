@@ -243,7 +243,7 @@ export function PullRequests(props: { repo?: string }) {
                       source: Icon.Tag,
                       tintColor: pull.labels.length ? Color.Green : Color.Red,
                     },
-                    tooltip: pull.labels.length ? pull.labels.map(({ name }) => name).join(", ") : "no labels",
+                    tooltip: pull.labels.length ? pull.labels.map(({ name }) => name).join(" ") : "no labels",
                   },
                   {
                     icon: {

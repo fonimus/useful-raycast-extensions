@@ -3,6 +3,8 @@ import {
   DeleteMode,
   VAULT_NAMESPACE_CACHE_KEY,
   VAULT_TOKEN_CACHE_KEY,
+  VaultAuth,
+  VaultEntity,
   VaultListEntry,
   VaultLoginResponse,
   VaultMetaDataResponse,
@@ -142,8 +144,7 @@ export async function saveSecretToFile(secret: object, path: string) {
 
 export async function callTree(path: string): Promise<VaultListEntry[]> {
   console.info("Calling tree", path);
-  const client = await getVaultClient();
-  const response = await client.list("secret/metadata" + path, {});
+  const response = await (await getVaultClient()).list("secret/metadata" + path, {});
   return response.data.keys.map((key: string) => {
     return { key: path + key, label: key, folder: key.endsWith("/") };
   });
@@ -151,15 +152,13 @@ export async function callTree(path: string): Promise<VaultListEntry[]> {
 
 export async function callRead(path: string): Promise<VaultReadResponse> {
   console.info("Calling read", path);
-  const client = await getVaultClient();
-  const response = await client.read("secret/data" + path, {});
+  const response = await (await getVaultClient()).read("secret/data" + path, {});
   return response.data;
 }
 
 export async function callReadMetadata(path: string): Promise<VaultReadMetadataResponse> {
   console.info("Calling read metadata", path);
-  const client = await getVaultClient();
-  const response = await client.read("secret/metadata" + path, {});
+  const response = await (await getVaultClient()).read("secret/metadata" + path, {});
   let currentVersion: VaultVersion | undefined;
   const versions = Object.getOwnPropertyNames(response.data.versions)
     .map((versionStr) => {
@@ -189,21 +188,21 @@ export async function callReadMetadata(path: string): Promise<VaultReadMetadataR
 
 export async function callWrite(path: string, newSecret: object): Promise<VaultMetaDataResponse> {
   console.info("Calling write", path);
-  const client = await getVaultClient();
-  const response = await client.write("secret/data" + path, { data: newSecret }, {});
+  const response = await (await getVaultClient()).write("secret/data" + path, { data: newSecret }, {});
   return response.data;
 }
 
 export async function callDelete(path: string, deleteMode: DeleteMode, version?: number) {
   console.info("Calling delete", path, deleteMode);
-  const client = await getVaultClient();
   if (deleteMode === DeleteMode.deleteVersion) {
-    await client.delete("secret/data" + path, {});
+    await (await getVaultClient()).delete("secret/data" + path, {});
   } else if (deleteMode === DeleteMode.destroyVersion) {
     if (!version) {
       throw new Error("Version is mandatory to destroy specific version");
     }
-    await client.request({
+    await (
+      await getVaultClient()
+    ).request({
       path: "/secret/destroy" + path,
       method: "POST",
       json: {
@@ -211,7 +210,7 @@ export async function callDelete(path: string, deleteMode: DeleteMode, version?:
       },
     });
   } else if (deleteMode === DeleteMode.destroyAllVersions) {
-    await client.delete("secret/metadata" + path, {});
+    await (await getVaultClient()).delete("secret/metadata" + path, {});
   }
 }
 
@@ -220,12 +219,97 @@ export async function callUndelete(path: string, version?: number) {
   if (!version) {
     throw new Error("Version is mandatory to undelete specific version");
   }
-  const client = await getVaultClient();
-  await client.request({
+  await (
+    await getVaultClient()
+  ).request({
     path: "/secret/undelete" + path,
     method: "POST",
     json: {
       versions: [version],
     },
   });
+}
+
+export async function callListEntities(): Promise<string[]> {
+  console.info("Calling list entities");
+  const response = await (
+    await getVaultClient()
+  ).request({
+    path: "/identity/entity/id",
+    method: "LIST",
+  });
+  return response.data.keys;
+}
+
+export async function callGetEntity(entityId: string): Promise<VaultEntity> {
+  const response = await (
+    await getVaultClient()
+  ).request({
+    path: "/identity/entity/id/" + entityId,
+    method: "GET",
+  });
+  return response.data;
+}
+
+export async function callDeleteEntity(entityId: string) {
+  await (
+    await getVaultClient()
+  ).request({
+    path: "/identity/entity/id/" + entityId,
+    method: "DELETE",
+  });
+}
+
+export async function callCreateEntity(name: string, policies: string[]) {
+  console.info("Creating entity for name: ", name);
+  const response = await (
+    await getVaultClient()
+  ).request({
+    path: "/identity/entity",
+    method: "POST",
+    json: {
+      name: name,
+      policies: policies,
+    },
+  });
+  return response.data.id;
+}
+
+export async function callCreateAlias(entityId: string, aliasName: string, aliasMountAccessor: string) {
+  console.info("Creating alias for entity: ", entityId);
+  await (
+    await getVaultClient()
+  ).request({
+    path: "/identity/entity-alias",
+    method: "POST",
+    json: {
+      canonical_id: entityId,
+      name: aliasName,
+      mount_accessor: aliasMountAccessor,
+    },
+  });
+}
+
+export async function callGetSysAuth(): Promise<VaultAuth[]> {
+  const response = await (
+    await getVaultClient()
+  ).request({
+    path: "/sys/auth",
+    method: "GET",
+  });
+  return Object.keys(response.data).map((name) => ({
+    name: name.substring(0, name.length - 1),
+    type: response.data[name].type,
+    accessor: response.data[name].accessor,
+  }));
+}
+
+export async function callGetPolicies(): Promise<string[]> {
+  const response = await (
+    await getVaultClient()
+  ).request({
+    path: "/sys/policies/acl",
+    method: "LIST",
+  });
+  return response.data.keys;
 }

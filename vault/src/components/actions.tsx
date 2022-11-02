@@ -2,6 +2,7 @@ import { Action, ActionPanel, Icon } from "@raycast/api";
 import { getUserToken, getVaultNamespace, getVaultUrl } from "../utils";
 import { VaultNamespace } from "./namespace";
 import { VaultTree } from "./tree";
+import { VaultEntities } from "./entities";
 
 export function Configuration() {
   return (
@@ -11,6 +12,18 @@ export function Configuration() {
         title={"Change namespace"}
         shortcut={{ modifiers: ["cmd"], key: "y" }}
         target={<VaultNamespace />}
+      />
+      <Action.Push
+        icon={Icon.PersonLines}
+        title={"List entities"}
+        shortcut={{ modifiers: ["cmd", "opt"], key: "a" }}
+        target={<VaultEntities />}
+      />
+      <Action.Push
+        icon={Icon.List}
+        title={"List secrets"}
+        shortcut={{ modifiers: ["cmd", "opt"], key: "t" }}
+        target={<VaultTree path={"/"} />}
       />
     </ActionPanel.Section>
   );
