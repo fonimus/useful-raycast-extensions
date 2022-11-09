@@ -14,22 +14,26 @@ import { useCachedState, usePromise } from "@raycast/utils";
 import { useCallback, useState } from "react";
 import { DeleteMode, DisplayMode, VaultEntry, VaultReadMetadataResponse } from "../interfaces";
 import {
+  addToFavorites,
   callDelete,
   callRead,
   callReadMetadata,
   callUndelete,
   duration,
   getVaultNamespace,
+  isFavorite,
+  removeFromFavorites,
   saveSecretToFile,
   stringify,
 } from "../utils";
 import { VaultEdit } from "./edit";
-import { Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
+import { Back, Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
 
-export function VaultDisplay(props: { path: string; showGoToRoot?: boolean }) {
+export function VaultDisplay(props: { path: string }) {
   const { push, pop } = useNavigation();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [favorite, setFavorite] = useState(false);
   const [secret, setSecret] = useState<object>({});
   const [secretList, setSecretList] = useState<VaultEntry[]>([]);
   const [result, setResult] = useState<string | undefined>(undefined);
@@ -40,6 +44,7 @@ export function VaultDisplay(props: { path: string; showGoToRoot?: boolean }) {
   });
 
   const { isLoading: loadingGetSecret, revalidate } = usePromise(async () => {
+    setFavorite(await isFavorite(props.path));
     const metadataResponse = await callReadMetadata(props.path);
     setMetadata(metadataResponse);
     if (metadataResponse.current_version.destroyed || metadataResponse.current_version.deletion_time !== "") {
@@ -165,7 +170,23 @@ export function VaultDisplay(props: { path: string; showGoToRoot?: boolean }) {
             />
             {CopyToken()}
           </ActionPanel.Section>
-          {props.showGoToRoot && <ActionPanel.Section title="Navigation">{Root()}</ActionPanel.Section>}
+          <ActionPanel.Section title="Navigation">
+            {favorite ? (
+              <Action
+                icon={Icon.Star}
+                title={"Remove from favorites"}
+                onAction={() => removeFromFavorites(props.path, revalidate)}
+              />
+            ) : (
+              <Action
+                icon={Icon.Star}
+                title={"Add to favorites"}
+                onAction={() => addToFavorites(props.path, revalidate)}
+              />
+            )}
+            <Back path={props.path} />
+            <Root />
+          </ActionPanel.Section>
           <ActionPanel.Section title="Edit">
             <Action.Push
               icon={Icon.NewDocument}
@@ -228,8 +249,8 @@ export function VaultDisplay(props: { path: string; showGoToRoot?: boolean }) {
     },
     [
       props.path,
-      props.showGoToRoot,
       secret,
+      favorite,
       metadata,
       displayMode,
       deleteSecret,

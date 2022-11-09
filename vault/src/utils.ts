@@ -14,10 +14,11 @@ import {
   VaultVersion,
 } from "./interfaces";
 import got from "got";
-import { Cache, getPreferenceValues, open, showToast, Toast } from "@raycast/api";
+import { Cache, Form, getPreferenceValues, LocalStorage, open, showToast, Toast } from "@raycast/api";
 import { homedir } from "os";
 import fs from "fs";
 import hdate from "human-date";
+import Values = Form.Values;
 
 export interface VaultPreferences {
   url: string;
@@ -145,9 +146,13 @@ export async function saveSecretToFile(secret: object, path: string) {
 export async function callTree(path: string): Promise<VaultListEntry[]> {
   console.info("Calling tree", path);
   const response = await (await getVaultClient()).list("secret/metadata" + path, {});
-  return response.data.keys.map((key: string) => {
-    return { key: path + key, label: key, folder: key.endsWith("/") };
-  });
+  const favorites = (await listFavorites()).map(({ key }) => key);
+  return response.data.keys.map((key: string) => ({
+    key: path + key,
+    label: key,
+    folder: key.endsWith("/"),
+    favorite: favorites.includes(path + key),
+  }));
 }
 
 export async function callRead(path: string): Promise<VaultReadResponse> {
@@ -312,4 +317,35 @@ export async function callGetPolicies(): Promise<string[]> {
     method: "LIST",
   });
   return response.data.keys;
+}
+
+export async function listFavorites(): Promise<VaultListEntry[]> {
+  return Object.keys(await LocalStorage.allItems<Values>()).map((key: string) => ({
+    key: key,
+    label: key,
+    folder: key.endsWith("/"),
+    favorite: true,
+  }));
+}
+
+export async function isFavorite(path: string): Promise<boolean> {
+  return Object.keys(await LocalStorage.allItems<Values>()).includes(path);
+}
+
+export async function addToFavorites(path: string, callback: () => Promise<void>) {
+  await LocalStorage.setItem(path, true);
+  await showToast({
+    style: Toast.Style.Success,
+    title: "Added to favorites",
+  });
+  await callback();
+}
+
+export async function removeFromFavorites(path: string, callback: () => Promise<void>) {
+  await LocalStorage.removeItem(path);
+  await showToast({
+    style: Toast.Style.Success,
+    title: "Removed from favorites",
+  });
+  await callback();
 }

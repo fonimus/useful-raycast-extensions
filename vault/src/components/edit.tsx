@@ -2,7 +2,7 @@ import { Action, ActionPanel, Alert, confirmAlert, Form, Icon, showToast, Toast,
 import { useCallback, useState } from "react";
 import { callWrite, stringify } from "../utils";
 import { VaultDisplay } from "./display";
-import { CopyToken } from "./actions";
+import { Back, CopyToken, Root } from "./actions";
 
 export function VaultEdit(props: { path: string; currentSecret: object }) {
   const { push, pop } = useNavigation();
@@ -78,7 +78,8 @@ export function VaultEdit(props: { path: string; currentSecret: object }) {
             icon={Icon.SaveDocument}
             shortcut={{ modifiers: ["cmd"], key: "s" }}
           />
-          <Action title={"Go back"} icon={Icon.ArrowLeft} onAction={() => pop()} />
+          <Back path={props.path} />
+          <Root />
           <CopyToken />
         </ActionPanel>
       }

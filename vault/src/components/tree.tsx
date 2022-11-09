@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { DeleteMode, VaultListEntry } from "../interfaces";
-import { callDelete, callTree, getTechnicalPaths } from "../utils";
+import { addToFavorites, callDelete, callTree, getTechnicalPaths, removeFromFavorites } from "../utils";
 import { Action, ActionPanel, Alert, Color, confirmAlert, Icon, List, showToast, Toast } from "@raycast/api";
-import { Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
+import { Back, Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
 import { VaultDisplay } from "./display";
 import { useCachedState, usePromise } from "@raycast/utils";
 
@@ -100,6 +100,18 @@ export function VaultTree(props: { path: string }) {
                     tintColor: Color.Green,
                   }
             }
+            accessories={
+              entry.favorite
+                ? [
+                    {
+                      icon: {
+                        source: Icon.Star,
+                        tintColor: Color.Yellow,
+                      },
+                    },
+                  ]
+                : []
+            }
             actions={
               <ActionPanel>
                 <ActionPanel.Section title="Navigation">
@@ -107,12 +119,26 @@ export function VaultTree(props: { path: string }) {
                     <Action.Push
                       icon={Icon.ArrowDown}
                       title="Retrieve secret"
-                      target={<VaultDisplay path={entry.key} showGoToRoot />}
+                      target={<VaultDisplay path={entry.key} />}
                     />
                   )}
                   {entry.folder && (
                     <Action.Push icon={Icon.ArrowDown} title="Go Down" target={<VaultTree path={entry.key} />} />
                   )}
+                  {entry.favorite ? (
+                    <Action
+                      icon={Icon.Star}
+                      title={"Remove from favorites"}
+                      onAction={() => removeFromFavorites(entry.key, revalidate)}
+                    />
+                  ) : (
+                    <Action
+                      icon={Icon.Star}
+                      title={"Add to favorites"}
+                      onAction={() => addToFavorites(entry.key, revalidate)}
+                    />
+                  )}
+                  {props.path !== "/" && <Back path={props.path} />}
                   {props.path !== "/" && <Root />}
                 </ActionPanel.Section>
                 <ActionPanel.Section title="Copy">{CopyToken()}</ActionPanel.Section>

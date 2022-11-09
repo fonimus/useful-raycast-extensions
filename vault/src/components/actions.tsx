@@ -3,6 +3,7 @@ import { getUserToken, getVaultNamespace, getVaultUrl } from "../utils";
 import { VaultNamespace } from "./namespace";
 import { VaultTree } from "./tree";
 import { VaultEntities } from "./entities";
+import { VaultFavorites } from "./favorites";
 
 export function Configuration() {
   return (
@@ -12,6 +13,12 @@ export function Configuration() {
         title={"Change namespace"}
         shortcut={{ modifiers: ["cmd"], key: "y" }}
         target={<VaultNamespace />}
+      />
+      <Action.Push
+        icon={Icon.Star}
+        title={"List favorites"}
+        shortcut={{ modifiers: ["cmd"], key: "f" }}
+        target={<VaultFavorites />}
       />
       <Action.Push
         icon={Icon.PersonLines}
@@ -82,6 +89,18 @@ export function Root() {
       title="Go to root"
       shortcut={{ modifiers: ["opt", "shift"], key: "arrowLeft" }}
       target={<VaultTree path={"/"} />}
+    />
+  );
+}
+
+export function Back(props: { path: string }) {
+  const path = props.path.endsWith("/") ? props.path.substring(0, props.path.length - 1) : props.path;
+  return (
+    <Action.Push
+      title={"Go back"}
+      icon={Icon.ArrowLeft}
+      shortcut={{ modifiers: ["opt"], key: "arrowLeft" }}
+      target={<VaultTree path={path.substring(0, path.lastIndexOf("/") + 1)} />}
     />
   );
 }

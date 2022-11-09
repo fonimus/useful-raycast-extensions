@@ -28,6 +28,7 @@ export interface VaultListEntry {
   key: string;
   label: string;
   folder: boolean;
+  favorite: boolean;
 }
 
 export interface VaultLoginResponse {
