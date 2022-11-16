@@ -161,6 +161,9 @@ export function VaultDisplay(props: { path: string }) {
             {entry && (
               <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy secret value" content={entry.value} />
             )}
+            {entry && (
+              <Action.Paste icon={Icon.Clipboard} title="Paste secret value in current app" content={entry.value} />
+            )}
             <Action.CopyToClipboard icon={Icon.CopyClipboard} title="Copy secret" content={stringify(secret)} />
             <Action
               icon={Icon.SaveDocument}

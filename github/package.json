@@ -44,7 +44,7 @@
   ],
   "dependencies": {
     "@octokit/types": "^8.0.0",
-    "@raycast/api": "^1.42.0",
+    "@raycast/api": "^1.43.2",
     "@raycast/utils": "^1.4.9",
     "human-date": "^1.4.0",
     "octokit": "^2.0.9"
