@@ -24,7 +24,17 @@
       "subtitle": "Kafka menu bar - consumers",
       "description": "Overview of kafka consumers lag by environment with refresh",
       "mode": "menu-bar",
-      "interval": "5m"
+      "interval": "5m",
+      "preferences": [
+        {
+          "name": "hideWithoutLag",
+          "title": "Hide without lag",
+          "label": "Hide consumers without lag",
+          "description": "Hide consumers without lag to avoid long lists",
+          "type": "checkbox",
+          "required": false
+        }
+      ]
     }
   ],
   "preferences": [

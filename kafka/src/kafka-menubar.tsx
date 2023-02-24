@@ -1,4 +1,13 @@
-import { Cache, Clipboard, environment, Icon, LaunchType, MenuBarExtra, openCommandPreferences } from "@raycast/api";
+import {
+  Cache,
+  Clipboard,
+  environment,
+  getPreferenceValues,
+  Icon,
+  LaunchType,
+  MenuBarExtra,
+  openCommandPreferences,
+} from "@raycast/api";
 import { ConsumerGroupState, GroupDescription, GroupOverview } from "kafkajs";
 import { useCallback, useEffect, useState } from "react";
 import { useCachedState } from "@raycast/utils";
@@ -13,6 +22,12 @@ interface ConsumerInfo {
   members: number;
   overall: number;
 }
+
+interface KafkaMenuBarPreferences {
+  hideWithoutLag: boolean;
+}
+
+const preferences = getPreferenceValues<KafkaMenuBarPreferences>();
 
 const cacheNamespace = "kafka-menubar";
 const cacheKeyLag = "kafkaLagConsumers";
@@ -144,17 +159,29 @@ export default function KafkaLag() {
       ) : (
         <>
           <MenuBarExtra.Item title={"--- Group ids with lag ---"} />
+          {consumers.filter((consumer) => consumer.overall > 0).length === 0 && (
+            <MenuBarExtra.Item
+              title={"No consumers with lag"}
+              onAction={() => {
+                console.info();
+              }}
+            />
+          )}
           {consumers
             .filter((consumer) => consumer.overall > 0)
             .map((consumer) => (
               <MenuConsumer key={consumer.groupId} consumer={consumer} />
             ))}
-          <MenuBarExtra.Item title="--- Group ids up to date ---" />
-          {consumers
-            .filter((consumer) => consumer.overall === 0)
-            .map((consumer) => (
-              <MenuConsumer key={consumer.groupId} consumer={consumer} />
-            ))}
+          {!preferences.hideWithoutLag && (
+            <>
+              <MenuBarExtra.Item title="--- Group ids up to date ---" />
+              {consumers
+                .filter((consumer) => consumer.overall === 0)
+                .map((consumer) => (
+                  <MenuConsumer key={consumer.groupId} consumer={consumer} />
+                ))}
+            </>
+          )}
         </>
       )}
     </MenuBarExtra>
