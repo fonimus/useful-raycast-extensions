@@ -24,6 +24,10 @@
 
 [Read documentation](github/README.md)
 
+### Kafka
+
+[Read documentation](kafka/README.md)
+
 ## Development
 
 - `npm run dev` (auto reload of extension)
