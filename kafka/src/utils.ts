@@ -11,6 +11,10 @@ export interface KafkaEnv {
 
 export interface KafkaPreferences {
   configDirectory: string;
+  extractRegex: string;
+  extractTitleGroup: string;
+  extractSubTitleGroup: string;
+  extractMetadataNameAndGroup: string;
 }
 
 export interface LagInfo {
@@ -27,6 +31,21 @@ for (const file of files) {
 }
 
 const admins: Record<string, Admin> = {};
+
+export function getExtractConfig() {
+  if (preferences.extractRegex) {
+    return {
+      regex: new RegExp(preferences.extractRegex),
+      extractTitleGroup: Number(preferences.extractTitleGroup),
+      extractSubTitleGroup: Number(preferences.extractSubTitleGroup),
+      extractMetadataNameAndGroup: preferences.extractMetadataNameAndGroup.split(",").map((split) => ({
+        metadataName: split.split("=")[0],
+        group: Number(split.split("=")[1]),
+      })),
+    };
+  }
+  return null;
+}
 
 export function getEnvs(): string[] {
   return Array.from(envs.keys());

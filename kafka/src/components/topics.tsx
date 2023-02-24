@@ -1,7 +1,7 @@
 import { Action, ActionPanel, Color, Icon, List } from "@raycast/api";
 import { useCallback, useEffect, useState } from "react";
-import { ConfigEntries, ConfigResourceTypes, PartitionMetadata } from "kafkajs";
-import { buildAdmin, getConfig, getEnvs } from "../utils";
+import { ConfigEntries, ConfigResourceTypes } from "kafkajs";
+import { buildAdmin, getConfig, getEnvs, getExtractConfig } from "../utils";
 import { useCachedState } from "@raycast/utils";
 
 interface ConfigEntry {
@@ -18,6 +18,9 @@ enum Compacted {
 
 interface TopicInfo {
   name: string;
+  title?: string;
+  subtitle?: string;
+  metadata: Record<string, string>;
   compacted: Compacted;
   config: ConfigEntry[];
   partitions?: number;
@@ -25,6 +28,15 @@ interface TopicInfo {
 
 function getAccessories(topic: TopicInfo) {
   const result = [];
+  if (topic.title) {
+    result.push({
+      text: topic.partitions?.toString(),
+      tooltip: "Number of partitions",
+    });
+    for (const metadataKey in topic.metadata) {
+      result.push({ text: topic.metadata[metadataKey] });
+    }
+  }
   switch (topic.compacted) {
     case Compacted.loading:
       result.push({ tag: { color: Color.Brown, value: topic.compacted } });
@@ -40,6 +52,39 @@ function getAccessories(topic: TopicInfo) {
       break;
   }
   return result;
+}
+
+function buildNamesAndMetadata(topic: string) {
+  const config = getExtractConfig();
+  const base = {
+    name: topic,
+    metadata: {} as Record<string, string>,
+  };
+  if (config === null) {
+    return base;
+  }
+
+  const matches = topic.match(config.regex);
+  if (!matches) {
+    return base;
+  }
+
+  const title = matches.length - 1 >= config.extractTitleGroup ? matches[config.extractTitleGroup] : undefined;
+  const subtitle = matches.length - 1 >= config.extractSubTitleGroup ? matches[config.extractSubTitleGroup] : undefined;
+
+  if (config.extractMetadataNameAndGroup) {
+    for (const element of config.extractMetadataNameAndGroup) {
+      if (matches.length - 1 >= element.group) {
+        base.metadata[element.metadataName] = matches[element.group];
+      }
+    }
+  }
+
+  return {
+    ...base,
+    ...(title && { title }),
+    ...(subtitle && { subtitle }),
+  };
 }
 
 export default function KafkaTopics() {
@@ -62,7 +107,13 @@ export default function KafkaTopics() {
           return filterTopics.some((filterTopic) => topic.includes(filterTopic));
         })
         .sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" }));
-      setTopics(topics.map((topic) => ({ name: topic, compacted: Compacted.loading, config: [] })));
+      setTopics(
+        topics.map((topic) => ({
+          ...buildNamesAndMetadata(topic),
+          compacted: Compacted.loading,
+          config: [],
+        }))
+      );
 
       const metadata = new Map(
         (
@@ -73,7 +124,7 @@ export default function KafkaTopics() {
       );
       setTopics(
         topics.map((topic) => ({
-          name: topic,
+          ...buildNamesAndMetadata(topic),
           compacted: Compacted.loading,
           config: [],
           partitions: metadata.get(topic),
@@ -147,23 +198,40 @@ export default function KafkaTopics() {
       {topics.map((topic) => (
         <List.Item
           key={topic.name}
-          title={{ value: topic.name, tooltip: `${topic.name} - ${topic.partitions?.toString()} partitions` }}
+          title={{
+            value: topic.title ? topic.title : topic.name,
+            tooltip: `${topic.name}`,
+          }}
+          subtitle={topic.subtitle && { value: topic.subtitle }}
           detail={
             <List.Item.Detail
               isLoading={isLoading}
               metadata={
-                topic.config.length > 0 && (
-                  <List.Item.Detail.Metadata>
-                    <List.Item.Detail.Metadata.Label title={"Name"} text={topic.name} />
-                    <List.Item.Detail.Metadata.Separator />
-                    <List.Item.Detail.Metadata.Label title={"Partitions"} text={topic.partitions?.toString()} />
-                    <List.Item.Detail.Metadata.Separator />
-                    <List.Item.Detail.Metadata.Label title={"Configurations"} />
-                    {topic.config.map((entry) => (
-                      <List.Item.Detail.Metadata.Label key={entry.name} title={entry.name} text={entry.value} />
-                    ))}
-                  </List.Item.Detail.Metadata>
-                )
+                <List.Item.Detail.Metadata>
+                  <List.Item.Detail.Metadata.Label title={"Name"} text={topic.name} />
+                  <List.Item.Detail.Metadata.Separator />
+                  <List.Item.Detail.Metadata.Label title={"Partitions"} text={topic.partitions?.toString()} />
+                  <List.Item.Detail.Metadata.Separator />
+                  {Object.keys(topic.metadata).length > 0 && (
+                    <>
+                      <List.Item.Detail.Metadata.Label title={"Metadata :"} />
+                      {topic.title && <List.Item.Detail.Metadata.Label title={"Title"} text={topic.title} />}
+                      {topic.subtitle && <List.Item.Detail.Metadata.Label title={"Subtitle"} text={topic.subtitle} />}
+                      {Object.keys(topic.metadata).map((key) => (
+                        <List.Item.Detail.Metadata.Label key={key} title={key} text={topic.metadata[key]} />
+                      ))}
+                      <List.Item.Detail.Metadata.Separator />
+                    </>
+                  )}
+                  {topic.config.length > 0 && (
+                    <>
+                      <List.Item.Detail.Metadata.Label title={"Topic configuration :"} />
+                      {topic.config.map((entry) => (
+                        <List.Item.Detail.Metadata.Label key={entry.name} title={entry.name} text={entry.value} />
+                      ))}
+                    </>
+                  )}
+                </List.Item.Detail.Metadata>
               }
             />
           }
