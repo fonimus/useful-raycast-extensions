@@ -4,9 +4,18 @@
 
 ## Configuration
 
-| Name            | Required | Default   | Description                                  |
-|-----------------|----------|-----------|----------------------------------------------|
-| configDirectory | Yes      | ~/.kafka/ | Configuration directory containing env files |
+| Name                        | Required | Default     | Example                | Description                                                       |
+|-----------------------------|----------|-------------|------------------------|-------------------------------------------------------------------|
+| configDirectory             | Yes      | `~/.kafka/` | `/kafka-config/`       | Configuration directory containing [env files](#environment-file) |
+| extractRegex                | No       | -           | `topic_(.*)_(.*)_(.*)` | Regex to extract information from topic name                      |
+| extractTitleGroup           | No       | -           | 1                      | Group to get from regex to display title                          |
+| extractSubTitleGroup        | No       | -           | 2                      | Group to get from regex to display subtitle                       |
+| extractMetadataNameAndGroup | No       | -           | Application=3          | Extract metadata from regex                                       |
+
+Note: in this example, with a topic named `topic_NAME_OWNER_APP`, the title
+would be **NAME**, the subtitle **OWNER**, and in the side panel we would have
+the following metadata **Application=APP**. If you don't set extractRegex full
+topic name will be displayed.
 
 ### Environment file
 
@@ -76,3 +85,9 @@ _Example_
 ## Kafka menu bar command
 
 Have kafka in menu bar with background actualization every 5 minutes
+
+## Configuration
+
+| Name           | Required | Default | Description                                    |
+|----------------|----------|---------|------------------------------------------------|
+| hideWithoutLag | No       | false   | Hide consumers without lag to avoid long lists |
