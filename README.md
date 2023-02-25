@@ -9,25 +9,24 @@
 ### Manual
 
 - Clone repository in `raycast-extensions`
-- cd `extension-folder`
-- In raycast, type *Import Extensions*, enter, and choose `raycast-extensions`/`extension-folder`
-- `npm ci`
-- `npm run build`
+- In raycast, type *Import Extensions*, enter, and choose `raycast-extensions`/`extensions`/`extension-folder`
+- `yarn install -W`
+- `yarn build`
 
 ## Extensions
 
 ### Vault
 
-[Read documentation](./vault/README.md)
+[Read documentation](extensions/vault/README.md)
 
 ### Github
 
-[Read documentation](github/README.md)
+[Read documentation](extensions/github/README.md)
 
 ### Kafka
 
-[Read documentation](kafka/README.md)
+[Read documentation](extensions/kafka/README.md)
 
 ## Development
 
-- `npm run dev` (auto reload of extension)
+- `yarn dev:<extension>` (auto reload of extension)

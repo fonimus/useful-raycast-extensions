@@ -1,6 +1,7 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "github",
+  "version": "1.0.0",
   "title": "Github",
   "description": "Github extension for raycast",
   "icon": "github.png",
@@ -11,13 +12,6 @@
   ],
   "license": "MIT",
   "commands": [
-    {
-      "name": "repo",
-      "title": "Repo",
-      "subtitle": "Github - repositories",
-      "description": "Overview of github repo and pull requests",
-      "mode": "view"
-    },
     {
       "name": "pull",
       "title": "Pull",
@@ -43,23 +37,14 @@
     }
   ],
   "dependencies": {
-    "@octokit/types": "^8.0.0",
-    "@raycast/api": "1.47.3",
-    "@raycast/utils": "1.4.18",
-    "human-date": "^1.4.0",
-    "octokit": "^2.0.9"
+    "@raycast/api": "1.48.4",
+    "human-date": "1.4.0",
+    "octokit": "2.0.14"
   },
   "devDependencies": {
-    "@types/human-date": "^1.4.2",
-    "@types/node": "^18.8.3",
-    "@types/react": "18.0.9",
-    "@typescript-eslint/eslint-plugin": "^5.0.0",
-    "@typescript-eslint/parser": "^5.0.0",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "prettier": "^2.5.1",
-    "typescript": "^4.4.3"
+    "@octokit/types": "^9.0.0",
+    "@types/human-date": "1.4.2",
+    "typescript": "4.9.5"
   },
   "scripts": {
     "build": "ray build -e dist",

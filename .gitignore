@@ -1,5 +1,6 @@
 # node
-*/node_modules
+node_modules
+extensions/*/node_modules
 
 # intellij
 .idea

@@ -1,0 +1,34 @@
+{
+  "name": "raycast-extensions",
+  "author": "fonimus",
+  "workspaces": [
+    "extensions/*"
+  ],
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "npm run build -ws",
+    "lint": "npm run lint -ws",
+    "dev:github": "npm run dev --workspace=github",
+    "dev:kafka": "npm run dev --workspace=kafka",
+    "dev:vault": "npm run dev --workspace=vault",
+    "publish:github": "npm run publish --workspace=github",
+    "publish:kafka": "npm run publish --workspace=kafka",
+    "publish:vault": "npm run publish --workspace=vault"
+  },
+  "dependencies": {
+    "@raycast/api": "^1.48.4",
+    "@raycast/utils": "1.4.18"
+  },
+  "devDependencies": {
+    "@types/node": "18.14.1",
+    "@types/react": "18.0.28",
+    "@typescript-eslint/eslint-plugin": "5.53.0",
+    "@typescript-eslint/parser": "5.53.0",
+    "eslint": "8.34.0",
+    "eslint-config-prettier": "8.6.0",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "prettier": "2.8.4",
+    "typescript": "4.9.5"
+  }
+}
