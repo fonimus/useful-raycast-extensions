@@ -7,11 +7,14 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "npm run build -ws",
     "lint": "npm run lint -ws",
     "dev:github": "npm run dev --workspace=github",
     "dev:kafka": "npm run dev --workspace=kafka",
     "dev:vault": "npm run dev --workspace=vault",
+    "build": "npm run build -ws",
+    "build:github": "npm run build --workspace=github",
+    "build:kafka": "npm run build --workspace=kafka",
+    "build:vault": "npm run build --workspace=vault",
     "publish:github": "npm run publish --workspace=github",
     "publish:kafka": "npm run publish --workspace=kafka",
     "publish:vault": "npm run publish --workspace=vault"
