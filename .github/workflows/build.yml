@@ -13,11 +13,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
       - name: Setup node and yarn
         uses: mskelton/setup-yarn@v1
         with:
           node-version: '18.x'
+
       - name: Install dependencies
         run: yarn install -W
+
       - name: Build ${{ matrix.extension }}
         run: yarn build:${{ matrix.extension }}
