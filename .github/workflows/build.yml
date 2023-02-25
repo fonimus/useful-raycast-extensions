@@ -4,20 +4,37 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: Build ${{ matrix.extension }}
+  list-extensions:
+    name: List extensions
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        extension: [ "github", "kafka", "vault" ]
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - id: set-matrix
+        name: Set matrix
+        run: |
+          matrix=$(ls extensions/ | jq -R -s -c 'split("\n")[:-1]')
+          echo "Setting matrix : $matrix"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build extension ${{ matrix.extension }}
+    runs-on: ubuntu-latest
+    needs: list-extensions
+    strategy:
+      matrix:
+        extension: ${{ fromJson(needs.list-extensions.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Setup node and yarn
         uses: mskelton/setup-yarn@v1
         with:
           node-version: '18.x'
-      - name: Install dependencies
-        run: yarn install -W
+
       - name: Build ${{ matrix.extension }}
-        run: yarn build:${{ matrix.extension }}
+        run: yarn workspace ${{ matrix.extension }} build
