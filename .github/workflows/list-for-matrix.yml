@@ -1,4 +1,4 @@
-name: List Extensions
+name: List for matrix
 
 on:
   workflow_call:
