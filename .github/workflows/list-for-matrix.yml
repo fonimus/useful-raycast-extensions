@@ -1,4 +1,4 @@
-name: Build
+name: List Extensions
 
 on:
   workflow_call:
@@ -10,11 +10,11 @@ on:
     outputs:
       matrix:
         description: "Matrix output to use in strategy"
-        value: ${{ jobs.list-extensions.outputs.matrix }}
+        value: ${{ jobs.build-matrix.outputs.matrix }}
 
 jobs:
-  list-extensions:
-    name: List extensions
+  build-matrix:
+    name: Build matrix
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
