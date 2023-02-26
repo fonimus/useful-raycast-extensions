@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      directory:
+        type: string
+        description: Directory to list to build matrix
+        required: true
+    outputs:
+      matrix:
+        description: "Matrix output to use in strategy"
+        value: ${{ jobs.list-extensions.outputs.matrix }}
+
+jobs:
+  list-extensions:
+    name: List extensions
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - id: set-matrix
+        name: Set matrix
+        run: |
+          matrix=$(ls ${{ inputs.directory }} | jq -R -s -c 'split("\n")[:-1]')
+          echo "Setting matrix : $matrix"
+          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"

@@ -5,20 +5,9 @@ on:
 
 jobs:
   list-extensions:
-    name: List extensions
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - id: set-matrix
-        name: Set matrix
-        run: |
-          matrix=$(ls extensions/ | jq -R -s -c 'split("\n")[:-1]')
-          echo "Setting matrix : $matrix"
-          echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
+    uses: ./.github/workflows/list-extensions.yml
+    with:
+      directory: extensions/
 
   build:
     name: Build extension ${{ matrix.extension }}
