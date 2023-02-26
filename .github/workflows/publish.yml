@@ -1,7 +1,9 @@
-name: Build
+name: Publish
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   list-extensions:
@@ -20,13 +22,14 @@ jobs:
           echo "Setting matrix : $matrix"
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
 
-  build:
-    name: Build extension ${{ matrix.extension }}
+  publish:
+    name: Publish extension ${{ matrix.extension }}
     runs-on: ubuntu-latest
     needs: list-extensions
     strategy:
       matrix:
-        extension: ${{ fromJson(needs.list-extensions.outputs.matrix) }}
+        #        extension: ${{ fromJson(needs.list-extensions.outputs.matrix) }}
+        extension: [ "github" ]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,5 +46,14 @@ jobs:
       - name: Install dependencies
         run: yarn workspace ${{ matrix.extension }} install
 
+      - name: Raycast login
+        run: |
+          configPath=~/.config/raycast/
+          mkdir -p $configPath
+          jq -n --arg accesstoken "${{ secrets.RAYCAST_TOKEN }}" '{"accesstoken": $accesstoken}' > $configPath/config.json
+
       - name: Build extension ${{ matrix.extension }}
         run: yarn workspace ${{ matrix.extension }} run build
+
+      - name: Publish extension ${{ matrix.extension }}
+        run: yarn workspace ${{ matrix.extension }} run publish
