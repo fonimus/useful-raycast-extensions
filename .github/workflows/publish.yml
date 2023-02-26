@@ -56,8 +56,9 @@ jobs:
 
       - name: Copy raycast package.json
         run: |
-          raycastApiPackageJsonFile=node_modules/@raycast/api/package.json
-          cp $raycastApiPackageJsonFile extensions/${{ matrix.extension }}/$raycastApiPackageJsonFile
+          raycastApiPackageJsonDir=node_modules/@raycast/api/
+          mkdir -p extensions/${{ matrix.extension }}/$raycastApiPackageJsonDir/
+          cp $raycastApiPackageJsonDir/package.json extensions/${{ matrix.extension }}/$raycastApiPackageJsonDir/package.json
 
       - name: Publish extension ${{ matrix.extension }}
         run: yarn workspace ${{ matrix.extension }} run publish
