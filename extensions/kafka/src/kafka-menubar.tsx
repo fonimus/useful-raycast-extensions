@@ -163,7 +163,7 @@ export default function KafkaLag() {
             <MenuBarExtra.Item
               title={"No consumers with lag"}
               onAction={() => {
-                console.info();
+                console.info("No consumers with lag");
               }}
             />
           )}
