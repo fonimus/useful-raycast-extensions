@@ -37,20 +37,16 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'false'
         run: echo "No changes for extension ${{ matrix.extension }}, skipping publish steps"
 
-      - name: Setup node and yarn
+      - name: Setup node
         if: steps.changed-files.outputs.any_changed == 'true'
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'yarn'
-
-      - name: Enable yarn
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: corepack enable
+          cache: 'npm'
 
       - name: Install dependencies
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: yarn workspace ${{ matrix.extension }} install
+        run: npm ci
 
       - name: Raycast login
         if: steps.changed-files.outputs.any_changed == 'true'
@@ -61,15 +57,8 @@ jobs:
 
       - name: Build extension ${{ matrix.extension }}
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: yarn workspace ${{ matrix.extension }} run build
-
-      - name: Copy raycast package.json
-        if: steps.changed-files.outputs.any_changed == 'true'
-        run: |
-          raycastApiPackageJsonDir=node_modules/@raycast/api/
-          mkdir -p extensions/${{ matrix.extension }}/$raycastApiPackageJsonDir/
-          cp $raycastApiPackageJsonDir/package.json extensions/${{ matrix.extension }}/$raycastApiPackageJsonDir/package.json
+        run: npm run -w ${{ matrix.extension }} build
 
       - name: Publish extension ${{ matrix.extension }}
         if: steps.changed-files.outputs.any_changed == 'true'
-        run: yarn workspace ${{ matrix.extension }} run publish
+        run: npm run -w ${{ matrix.extension }} publish

@@ -3,7 +3,7 @@
   "name": "kafka",
   "version": "1.0.0",
   "title": "Kafka",
-  "description": "Kafka extension for raycast",
+  "description": "Kafka extension for Raycast",
   "icon": "kafka.png",
   "author": "fonimus",
   "owner": "fonimus-inc",
