@@ -123,7 +123,7 @@ export default function KafkaLag() {
   }, [env, load, setIsLoading]);
 
   return (
-    <MenuBarExtra icon="kafka.png" tooltip="Kafka lag" isLoading={isLoading}>
+    <MenuBarExtra icon="kafka-dark.png" tooltip="Kafka lag" isLoading={isLoading}>
       <MenuBarExtra.Item
         title={`--- Kafka Lag ---${
           cache.has(cacheKeyLastUpdate) ? "  (last update : " + cache.get(cacheKeyLastUpdate) + ")" : ""
@@ -154,9 +154,8 @@ export default function KafkaLag() {
           }}
         />
       )}
-      {state !== "Loaded" ? (
-        state === "Loading" && <MenuBarExtra.Item title={"Loading..."} icon={Icon.Clock} />
-      ) : (
+      {state === "Loading" && <MenuBarExtra.Item title={"Loading..."} icon={Icon.Clock} />}
+      {consumers.length > 0 && (
         <>
           <MenuBarExtra.Item title={"--- Group ids with lag ---"} />
           {consumers.filter((consumer) => consumer.overall > 0).length === 0 && (
