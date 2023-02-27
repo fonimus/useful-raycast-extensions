@@ -3,7 +3,7 @@
   "name": "github",
   "version": "1.0.0",
   "title": "Github",
-  "description": "Github extension for raycast",
+  "description": "Github extension for Raycast",
   "icon": "github.png",
   "author": "fonimus",
   "owner": "fonimus-inc",

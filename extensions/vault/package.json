@@ -3,7 +3,7 @@
   "name": "vault",
   "version": "1.0.0",
   "title": "Vault",
-  "description": "Vault extension for raycast",
+  "description": "Vault extension for Raycast",
   "icon": "vault.png",
   "author": "fonimus",
   "owner": "fonimus-inc",

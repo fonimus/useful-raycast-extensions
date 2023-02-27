@@ -8,7 +8,8 @@
   "private": true,
   "scripts": {
     "lint": "npm run lint -ws",
-    "build": "npm run build -ws"
+    "build": "npm run build -ws",
+    "postinstall": "node post-install.js"
   },
   "dependencies": {
     "@raycast/api": "^1.48.4",
