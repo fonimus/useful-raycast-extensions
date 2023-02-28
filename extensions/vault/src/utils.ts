@@ -25,14 +25,24 @@ export interface VaultPreferences {
   ldap: string;
   password: string;
   technicalPaths: string;
+  enableWrite: boolean;
+  enableDelete: boolean;
 }
 
 const preferences = getPreferenceValues<VaultPreferences>();
 const vaultUrl = preferences.url.replace(/\/$/, "");
 const ldap = preferences.ldap;
 const password = preferences.password;
-
+console.log(preferences);
 const cache = new Cache();
+
+export function writeEnabled(): boolean {
+  return preferences.enableWrite;
+}
+
+export function deleteEnabled(): boolean {
+  return preferences.enableDelete;
+}
 
 export function stringify(value: object) {
   return JSON.stringify(value, undefined, 2);
