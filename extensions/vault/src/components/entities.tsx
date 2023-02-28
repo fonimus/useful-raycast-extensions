@@ -21,6 +21,8 @@ import {
   callGetPolicies,
   callGetSysAuth,
   callListEntities,
+  deleteEnabled,
+  writeEnabled,
 } from "../utils";
 import { VaultAuth, VaultEntity } from "../interfaces";
 
@@ -203,19 +205,25 @@ export function VaultEntities() {
             }
             actions={
               <ActionPanel>
-                <Action.Push icon={Icon.Pencil} title={"Add alias"} target={<VaultAddEntity entity={entity} />} />
-                <Action.Push
-                  icon={Icon.AddPerson}
-                  title={"Add entity"}
-                  shortcut={{ modifiers: ["cmd"], key: "n" }}
-                  target={<VaultAddEntity />}
-                />
-                <Action
-                  icon={Icon.RemovePerson}
-                  title={"Remove entity"}
-                  shortcut={{ modifiers: ["ctrl"], key: "x" }}
-                  onAction={() => deleteEntity(entity.id)}
-                />
+                {writeEnabled() && (
+                  <>
+                    <Action.Push icon={Icon.Pencil} title={"Add alias"} target={<VaultAddEntity entity={entity} />} />
+                    <Action.Push
+                      icon={Icon.AddPerson}
+                      title={"Add entity"}
+                      shortcut={{ modifiers: ["cmd"], key: "n" }}
+                      target={<VaultAddEntity />}
+                    />
+                  </>
+                )}
+                {deleteEnabled() && (
+                  <Action
+                    icon={Icon.RemovePerson}
+                    title={"Remove entity"}
+                    shortcut={{ modifiers: ["ctrl"], key: "x" }}
+                    onAction={() => deleteEntity(entity.id)}
+                  />
+                )}
                 <ActionPanel.Section title="Display">
                   <Action
                     icon={showWithoutPolicies ? Icon.EyeDisabled : Icon.Eye}

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { DeleteMode, VaultListEntry } from "../interfaces";
-import { addToFavorites, callDelete, callTree, getTechnicalPaths, removeFromFavorites } from "../utils";
+import { addToFavorites, callDelete, callTree, deleteEnabled, getTechnicalPaths, removeFromFavorites } from "../utils";
 import { Action, ActionPanel, Alert, Color, confirmAlert, Icon, List, showToast, Toast } from "@raycast/api";
 import { Back, Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
 import { VaultDisplay } from "./display";
@@ -151,15 +151,17 @@ export function VaultTree(props: { path: string }) {
                   />
                   <OpenVault path={entry.key} />
                 </ActionPanel.Section>
-                <ActionPanel.Section title="Delete">
-                  {entry.folder && (
-                    <Action
-                      icon={Icon.Trash}
-                      title="Delete all secrets recursively"
-                      onAction={() => deleteRecursively(entry.key)}
-                    />
-                  )}
-                </ActionPanel.Section>
+                {deleteEnabled() && (
+                  <ActionPanel.Section title="Delete">
+                    {entry.folder && (
+                      <Action
+                        icon={Icon.Trash}
+                        title="Delete all secrets recursively"
+                        onAction={() => deleteRecursively(entry.key)}
+                      />
+                    )}
+                  </ActionPanel.Section>
+                )}
                 <Configuration />
                 <Reload revalidate={revalidate} />
               </ActionPanel>

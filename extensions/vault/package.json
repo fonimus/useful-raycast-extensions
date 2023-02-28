@@ -48,6 +48,24 @@
       "description": "Technical paths to hide, separated by space",
       "type": "textfield",
       "required": false
+    },
+    {
+      "name": "enableWrite",
+      "title": "Enable write",
+      "label": "Enable write",
+      "description": "Enable write",
+      "type": "checkbox",
+      "default": true,
+      "required": true
+    },
+    {
+      "name": "enableDelete",
+      "title": "Enable delete",
+      "label": "Enable delete",
+      "description": "Enable delete",
+      "type": "checkbox",
+      "default": false,
+      "required": true
     }
   ],
   "dependencies": {

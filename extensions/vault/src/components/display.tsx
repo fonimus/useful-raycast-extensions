@@ -19,12 +19,14 @@ import {
   callRead,
   callReadMetadata,
   callUndelete,
+  deleteEnabled,
   duration,
   getVaultNamespace,
   isFavorite,
   removeFromFavorites,
   saveSecretToFile,
   stringify,
+  writeEnabled,
 } from "../utils";
 import { VaultEdit } from "./edit";
 import { Back, Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
@@ -190,40 +192,44 @@ export function VaultDisplay(props: { path: string }) {
             <Back path={props.path} />
             <Root />
           </ActionPanel.Section>
-          <ActionPanel.Section title="Edit">
-            <Action.Push
-              icon={Icon.NewDocument}
-              title="Create new version"
-              shortcut={{ modifiers: ["cmd"], key: "n" }}
-              target={<VaultEdit path={props.path} currentSecret={secret} />}
-            />
-          </ActionPanel.Section>
-          <ActionPanel.Section title="Delete">
-            {!metadata?.current_version.destroyed && (
+          {writeEnabled() && (
+            <ActionPanel.Section title="Edit">
+              <Action.Push
+                icon={Icon.NewDocument}
+                title="Create new version"
+                shortcut={{ modifiers: ["cmd"], key: "n" }}
+                target={<VaultEdit path={props.path} currentSecret={secret} />}
+              />
+            </ActionPanel.Section>
+          )}
+          {deleteEnabled() && (
+            <ActionPanel.Section title="Delete">
+              {!metadata?.current_version.destroyed && (
+                <Action
+                  icon={Icon.Trash}
+                  title={metadata?.current_version.deleted ? "Undelete version" : "Delete version"}
+                  shortcut={{ modifiers: ["ctrl"], key: "x" }}
+                  onAction={() =>
+                    metadata?.current_version.deleted ? undeleteSecret() : deleteSecret(DeleteMode.deleteVersion)
+                  }
+                />
+              )}
+              {!metadata?.current_version.destroyed && (
+                <Action
+                  icon={Icon.Trash}
+                  title="Destroy version"
+                  shortcut={{ modifiers: ["ctrl", "opt"], key: "x" }}
+                  onAction={() => deleteSecret(DeleteMode.destroyVersion)}
+                />
+              )}
               <Action
                 icon={Icon.Trash}
-                title={metadata?.current_version.deleted ? "Undelete version" : "Delete version"}
-                shortcut={{ modifiers: ["ctrl"], key: "x" }}
-                onAction={() =>
-                  metadata?.current_version.deleted ? undeleteSecret() : deleteSecret(DeleteMode.deleteVersion)
-                }
+                title="Destroy all versions"
+                shortcut={{ modifiers: ["ctrl", "opt", "shift"], key: "x" }}
+                onAction={() => deleteSecret(DeleteMode.destroyAllVersions)}
               />
-            )}
-            {!metadata?.current_version.destroyed && (
-              <Action
-                icon={Icon.Trash}
-                title="Destroy version"
-                shortcut={{ modifiers: ["ctrl", "opt"], key: "x" }}
-                onAction={() => deleteSecret(DeleteMode.destroyVersion)}
-              />
-            )}
-            <Action
-              icon={Icon.Trash}
-              title="Destroy all versions"
-              shortcut={{ modifiers: ["ctrl", "opt", "shift"], key: "x" }}
-              onAction={() => deleteSecret(DeleteMode.destroyAllVersions)}
-            />
-          </ActionPanel.Section>
+            </ActionPanel.Section>
+          )}
           <ActionPanel.Section title="Display">
             {!metadata?.current_version.destroyed && metadata?.current_version.deletion_time === "" && (
               <Action
