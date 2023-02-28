@@ -195,66 +195,68 @@ export default function KafkaTopics() {
         </List.Dropdown>
       }
     >
-      {topics.map((topic) => (
-        <List.Item
-          key={topic.name}
-          title={{
-            value: topic.title ? topic.title : topic.name,
-            tooltip: `${topic.name}`,
-          }}
-          subtitle={topic.subtitle && { value: topic.subtitle }}
-          detail={
-            <List.Item.Detail
-              isLoading={isLoading}
-              metadata={
-                <List.Item.Detail.Metadata>
-                  <List.Item.Detail.Metadata.Label title={"Name"} text={topic.name} />
-                  <List.Item.Detail.Metadata.Separator />
-                  <List.Item.Detail.Metadata.Label title={"Partitions"} text={topic.partitions?.toString()} />
-                  <List.Item.Detail.Metadata.Separator />
-                  {Object.keys(topic.metadata).length > 0 && (
-                    <>
-                      <List.Item.Detail.Metadata.Label title={"Metadata :"} />
-                      {topic.title && <List.Item.Detail.Metadata.Label title={"Title"} text={topic.title} />}
-                      {topic.subtitle && <List.Item.Detail.Metadata.Label title={"Subtitle"} text={topic.subtitle} />}
-                      {Object.keys(topic.metadata).map((key) => (
-                        <List.Item.Detail.Metadata.Label key={key} title={key} text={topic.metadata[key]} />
-                      ))}
-                      <List.Item.Detail.Metadata.Separator />
-                    </>
-                  )}
-                  {topic.config.length > 0 && (
-                    <>
-                      <List.Item.Detail.Metadata.Label title={"Topic configuration :"} />
-                      {topic.config.map((entry) => (
-                        <List.Item.Detail.Metadata.Label key={entry.name} title={entry.name} text={entry.value} />
-                      ))}
-                    </>
-                  )}
-                </List.Item.Detail.Metadata>
-              }
-            />
-          }
-          accessories={getAccessories(topic)}
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard content={topic.name} />
-              <Action
-                title="Refresh"
-                shortcut={{ modifiers: ["cmd"], key: "r" }}
-                icon={Icon.RotateClockwise}
-                onAction={async () => await load(env)}
+      <List.Section title={topics.length + " topics"}>
+        {topics.map((topic) => (
+          <List.Item
+            key={topic.name}
+            title={{
+              value: topic.title ? topic.title : topic.name,
+              tooltip: `${topic.name}`,
+            }}
+            subtitle={topic.subtitle && { value: topic.subtitle }}
+            detail={
+              <List.Item.Detail
+                isLoading={isLoading}
+                metadata={
+                  <List.Item.Detail.Metadata>
+                    <List.Item.Detail.Metadata.Label title={"Name"} text={topic.name} />
+                    <List.Item.Detail.Metadata.Separator />
+                    <List.Item.Detail.Metadata.Label title={"Partitions"} text={topic.partitions?.toString()} />
+                    <List.Item.Detail.Metadata.Separator />
+                    {Object.keys(topic.metadata).length > 0 && (
+                      <>
+                        <List.Item.Detail.Metadata.Label title={"Metadata :"} />
+                        {topic.title && <List.Item.Detail.Metadata.Label title={"Title"} text={topic.title} />}
+                        {topic.subtitle && <List.Item.Detail.Metadata.Label title={"Subtitle"} text={topic.subtitle} />}
+                        {Object.keys(topic.metadata).map((key) => (
+                          <List.Item.Detail.Metadata.Label key={key} title={key} text={topic.metadata[key]} />
+                        ))}
+                        <List.Item.Detail.Metadata.Separator />
+                      </>
+                    )}
+                    {topic.config.length > 0 && (
+                      <>
+                        <List.Item.Detail.Metadata.Label title={"Topic configuration :"} />
+                        {topic.config.map((entry) => (
+                          <List.Item.Detail.Metadata.Label key={entry.name} title={entry.name} text={entry.value} />
+                        ))}
+                      </>
+                    )}
+                  </List.Item.Detail.Metadata>
+                }
               />
-              <Action
-                icon={Icon.Info}
-                title="Display details"
-                shortcut={{ modifiers: ["cmd"], key: "i" }}
-                onAction={() => setWithDetails((withDetails) => !withDetails)}
-              />
-            </ActionPanel>
-          }
-        />
-      ))}
+            }
+            accessories={getAccessories(topic)}
+            actions={
+              <ActionPanel>
+                <Action.CopyToClipboard content={topic.name} />
+                <Action
+                  title="Refresh"
+                  shortcut={{ modifiers: ["cmd"], key: "r" }}
+                  icon={Icon.RotateClockwise}
+                  onAction={async () => await load(env)}
+                />
+                <Action
+                  icon={Icon.Info}
+                  title="Display details"
+                  shortcut={{ modifiers: ["cmd"], key: "i" }}
+                  onAction={() => setWithDetails((withDetails) => !withDetails)}
+                />
+              </ActionPanel>
+            }
+          />
+        ))}
+      </List.Section>
     </List>
   );
 }

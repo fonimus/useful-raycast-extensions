@@ -231,44 +231,46 @@ export default function KafkaConsumers() {
         </List.Dropdown>
       }
     >
-      {consumers.map((consumer) => (
-        <List.Item
-          key={consumer.groupId}
-          title={{ value: consumer.groupId, tooltip: consumer.topicName }}
-          accessories={getAccessories(consumer)}
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard content={consumer.groupId} />
-              <Action
-                title="Refresh"
-                shortcut={{ modifiers: ["cmd"], key: "r" }}
-                icon={Icon.RotateClockwise}
-                onAction={async () => await load(env)}
-              />
-              <Action
-                title="Set offset at latest"
-                icon={Icon.ArrowRightCircleFilled}
-                onAction={() => setOffset(consumer, "latest")}
-              />
-              <Action
-                title="Set offset at earliest"
-                icon={Icon.ArrowLeftCircleFilled}
-                onAction={() => setOffset(consumer, "earliest")}
-              />
-              <Action.PickDate
-                title="Set offset from date"
-                icon={Icon.Clock}
-                onChange={(date) => setOffset(consumer, date)}
-              />
-              <Action
-                title="Set offset from latest - 10"
-                icon={Icon.MinusCircleFilled}
-                onAction={() => setOffset(consumer, 10)}
-              />
-            </ActionPanel>
-          }
-        />
-      ))}
+      <List.Section title={consumers.length + " consumers"}>
+        {consumers.map((consumer) => (
+          <List.Item
+            key={consumer.groupId}
+            title={{ value: consumer.groupId, tooltip: consumer.topicName }}
+            accessories={getAccessories(consumer)}
+            actions={
+              <ActionPanel>
+                <Action.CopyToClipboard content={consumer.groupId} />
+                <Action
+                  title="Refresh"
+                  shortcut={{ modifiers: ["cmd"], key: "r" }}
+                  icon={Icon.RotateClockwise}
+                  onAction={async () => await load(env)}
+                />
+                <Action
+                  title="Set offset at latest"
+                  icon={Icon.ArrowRightCircleFilled}
+                  onAction={() => setOffset(consumer, "latest")}
+                />
+                <Action
+                  title="Set offset at earliest"
+                  icon={Icon.ArrowLeftCircleFilled}
+                  onAction={() => setOffset(consumer, "earliest")}
+                />
+                <Action.PickDate
+                  title="Set offset from date"
+                  icon={Icon.Clock}
+                  onChange={(date) => setOffset(consumer, date)}
+                />
+                <Action
+                  title="Set offset from latest - 10"
+                  icon={Icon.MinusCircleFilled}
+                  onAction={() => setOffset(consumer, 10)}
+                />
+              </ActionPanel>
+            }
+          />
+        ))}
+      </List.Section>
     </List>
   );
 }
