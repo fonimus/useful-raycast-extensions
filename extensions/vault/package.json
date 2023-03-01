@@ -107,8 +107,7 @@
     "node-vault": "0.9.22"
   },
   "devDependencies": {
-    "@types/human-date": "1.4.2",
-    "typescript": "4.9.5"
+    "@types/human-date": "1.4.2"
   },
   "scripts": {
     "build": "ray build -e dist",
