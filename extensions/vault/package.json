@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "vault",
+  "name": "vault-manager",
   "version": "1.0.0",
   "title": "Vault Manager",
   "description": "Vault extension for Raycast",
@@ -8,7 +8,8 @@
   "author": "fonimus",
   "owner": "fonimus-inc",
   "categories": [
-    "Productivity", "Developer Tools"
+    "Productivity",
+    "Developer Tools"
   ],
   "license": "MIT",
   "commands": [
