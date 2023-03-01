@@ -5,9 +5,11 @@ const extensionsDirectory = "./extensions/";
 const files = fs.readdirSync(extensionsDirectory, { withFileTypes: true });
 for (const dir of files.filter((file) => file.isDirectory())) {
   const extension = dir.name;
-  const tscAlias = "extensions/" + extension + "/node_modules/.bin/tsc";
+  const extensionBinDir = "extensions/" + extension + "/node_modules/.bin/";
+  const tscAlias = extensionBinDir + "tsc";
   if (!fs.existsSync(tscAlias)) {
-    execSync("ln -s ../../../../node_modules/typescript/bin/tsc extensions/" + extension + "/node_modules/.bin/tsc", {
+    fs.mkdirSync(extensionBinDir, { recursive: true });
+    execSync("ln -s ../../../../node_modules/typescript/bin/tsc " + tscAlias, {
       encoding: "utf-8",
     });
   }

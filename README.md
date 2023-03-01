@@ -11,8 +11,8 @@
 - Clone repository in `raycast-extensions`
 - In raycast, type *Import Extensions*, enter, and
   choose `raycast-extensions`/`extensions`/`extension-folder`
-- `yarn install -W`
-- `yarn build`
+- `npm ci`
+- `npm run build`
 
 ## Extensions
 
@@ -32,5 +32,4 @@
 
 Start extension with auto reload
 
-- `yarn workspace <extension> dev`
 - `npm run -w=<extension> dev`
