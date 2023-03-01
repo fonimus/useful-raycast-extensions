@@ -8,8 +8,7 @@
   "author": "fonimus",
   "owner": "fonimus-inc",
   "categories": [
-    "Productivity",
-    "Developer Tools"
+    "Productivity", "Developer Tools"
   ],
   "license": "MIT",
   "commands": [
