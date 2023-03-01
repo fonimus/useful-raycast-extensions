@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "github",
+  "name": "github-pulls",
   "version": "1.0.0",
   "title": "Github Pulls",
   "description": "Github pulls extension for Raycast",
@@ -13,8 +13,8 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "pull",
-      "title": "Pull",
+      "name": "github-pulls",
+      "title": "Github Pull",
       "subtitle": "Github - pull requests",
       "description": "Overview of github pull requests",
       "mode": "view"
