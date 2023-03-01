@@ -1,4 +1,4 @@
-# Raycast extensions
+# Raycast extensions MOCK
 
 ## Installation
 
