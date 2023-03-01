@@ -1,6 +1,6 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "github-pulls",
+  "name": "github",
   "version": "1.0.0",
   "title": "Github Pulls",
   "description": "Github pulls extension for Raycast",
