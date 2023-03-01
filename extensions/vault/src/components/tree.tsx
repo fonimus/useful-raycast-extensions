@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { DeleteMode, VaultListEntry } from "../interfaces";
 import { addToFavorites, callDelete, callTree, deleteEnabled, getTechnicalPaths, removeFromFavorites } from "../utils";
-import { Action, ActionPanel, Alert, Color, confirmAlert, Icon, List, showToast, Toast } from "@raycast/api";
+import { Action, ActionPanel, Alert, Color, confirmAlert, Detail, Icon, List, showToast, Toast } from "@raycast/api";
 import { Back, Configuration, CopyToken, OpenVault, Reload, Root } from "./actions";
 import { VaultDisplay } from "./display";
 import { useCachedState, usePromise } from "@raycast/utils";
@@ -10,9 +10,16 @@ export function VaultTree(props: { path: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showTechnical, setShowTechnical] = useCachedState("show-technical", false, { cacheNamespace: "tree" });
   const [keys, setKeys] = useState<VaultListEntry[]>([]);
+  const [error, setError] = useState<Error | unknown | null>(null);
 
   const { isLoading: isLoadingTree, revalidate } = usePromise(async () => {
-    setKeys(await callTree(props.path));
+    setError(null);
+    try {
+      setKeys(await callTree(props.path));
+    } catch (e: unknown) {
+      setError(e);
+      throw e;
+    }
   });
 
   const deleteInFolder = useCallback(async (path: string): Promise<number> => {
@@ -76,7 +83,9 @@ export function VaultTree(props: { path: string }) {
     [deleteInFolder, revalidate]
   );
 
-  return (
+  return error != null ? (
+    <Detail markdown={"Could not list vault secret tree :\n\n````\n\n" + error + "\n\n````"} />
+  ) : (
     <List filtering={true} isLoading={isLoading || isLoadingTree} navigationTitle={props.path}>
       <List.EmptyView
         actions={
@@ -123,7 +132,7 @@ export function VaultTree(props: { path: string }) {
                     />
                   )}
                   {entry.folder && (
-                    <Action.Push icon={Icon.ArrowDown} title="Go Down" target={<VaultTree path={entry.key} />} />
+                    <Action.Push icon={Icon.ArrowDown} title="Go Inside" target={<VaultTree path={entry.key} />} />
                   )}
                   {entry.favorite ? (
                     <Action

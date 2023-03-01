@@ -22,8 +22,10 @@ import Values = Form.Values;
 
 export interface VaultPreferences {
   url: string;
+  loginMethod: "ldap" | "token";
   ldap: string;
   password: string;
+  token: string;
   technicalPaths: string;
   favoriteNamespaces: string;
   enableWrite: boolean;
@@ -32,8 +34,6 @@ export interface VaultPreferences {
 
 const preferences = getPreferenceValues<VaultPreferences>();
 const vaultUrl = preferences.url.replace(/\/$/, "");
-const ldap = preferences.ldap;
-const password = preferences.password;
 const cache = new Cache();
 
 export function writeEnabled(): boolean {
@@ -89,6 +89,8 @@ export function parseTokenFromCache(): VaultTokenCache | undefined {
   }
 }
 
+export class ConfigurationError extends Error {}
+
 export async function getVaultClient(): Promise<NodeVault.client> {
   let tokenCache = parseTokenFromCache();
 
@@ -104,22 +106,39 @@ export async function getVaultClient(): Promise<NodeVault.client> {
 
   // get token if needed
   if (!tokenCache) {
-    console.info("Login with ldap...");
-    const body: VaultLoginResponse = await got
-      .post(`${vaultUrl}/v1/auth/ldap/login/${ldap}`, {
-        json: { password: password },
-        headers: {
-          "Content-Type": "application/json",
-          "X-Vault-Namespace": getVaultNamespace(),
-        },
-        responseType: "json",
-      })
-      .json();
-    // set token cache
-    tokenCache = {
-      token: body.auth.client_token,
-      expiration: Date.now() + body.auth.lease_duration * 1000,
-    };
+    if (preferences.loginMethod === "ldap") {
+      if (!preferences.ldap || !preferences.password) {
+        throw new ConfigurationError("Ldap method needs ldap and password to be set in preferences");
+      }
+      console.info("Login with ldap...");
+      const body: VaultLoginResponse = await got
+        .post(`${vaultUrl}/v1/auth/ldap/login/${preferences.ldap}`, {
+          json: { password: preferences.password },
+          headers: {
+            "Content-Type": "application/json",
+            "X-Vault-Namespace": getVaultNamespace(),
+          },
+          responseType: "json",
+        })
+        .json();
+      // set token cache
+      tokenCache = {
+        token: body.auth.client_token,
+        expiration: Date.now() + body.auth.lease_duration * 1000,
+      };
+    } else if (preferences.loginMethod === "token") {
+      if (!preferences.token) {
+        throw new ConfigurationError("Token method needs token to be set in preferences");
+      }
+      const expiration = new Date();
+      expiration.setFullYear(expiration.getFullYear() + 1);
+      tokenCache = {
+        token: preferences.token,
+        expiration: expiration.getTime(),
+      };
+    } else {
+      throw new Error("Unknown login method");
+    }
     // and save it
     cache.set(VAULT_TOKEN_CACHE_KEY, JSON.stringify(tokenCache));
     console.info("Logged successfully, saving token in cache");
