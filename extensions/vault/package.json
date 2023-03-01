@@ -101,7 +101,7 @@
     }
   ],
   "dependencies": {
-    "@raycast/api": "1.48.4",
+    "@raycast/api": "1.48.5",
     "got": "12.5.3",
     "human-date": "1.4.0",
     "node-vault": "0.9.22"

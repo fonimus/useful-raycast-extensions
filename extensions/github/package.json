@@ -37,7 +37,7 @@
     }
   ],
   "dependencies": {
-    "@raycast/api": "1.48.4",
+    "@raycast/api": "1.48.5",
     "human-date": "1.4.0",
     "octokit": "2.0.14"
   },
