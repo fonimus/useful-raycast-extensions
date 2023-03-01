@@ -18,11 +18,11 @@
 
 ### Vault
 
-[Read documentation](extensions/vault/README.md)
+[Read documentation](extensions/vault-manager/README.md)
 
 ### Github
 
-[Read documentation](extensions/github/README.md)
+[Read documentation](extensions/github-pulls/README.md)
 
 ### Kafka
 
