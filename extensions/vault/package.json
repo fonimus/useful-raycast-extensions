@@ -2,7 +2,7 @@
   "$schema": "https://www.raycast.com/schemas/extension.json",
   "name": "vault",
   "version": "1.0.0",
-  "title": "Vault",
+  "title": "Vault Manager",
   "description": "Vault extension for Raycast",
   "icon": "vault.png",
   "author": "fonimus",
@@ -14,9 +14,9 @@
   "commands": [
     {
       "name": "vault",
-      "title": "Vault",
-      "subtitle": "Explore vault secrets",
-      "description": "Explore vault secrets",
+      "title": "Vault Manager",
+      "subtitle": "Explore vault secrets and more",
+      "description": "Explore, display, edit, delete vault secrets, list entities",
       "mode": "view"
     }
   ],
