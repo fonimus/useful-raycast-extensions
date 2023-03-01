@@ -50,6 +50,13 @@
       "required": false
     },
     {
+      "name": "favoriteNamespaces",
+      "title": "Favorite namespaces",
+      "description": "Favorite namespaces, separated by space (for easy switch)",
+      "type": "textfield",
+      "required": false
+    },
+    {
       "name": "enableWrite",
       "title": "Enable write",
       "label": "Enable write",
