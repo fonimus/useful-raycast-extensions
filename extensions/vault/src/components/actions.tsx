@@ -1,38 +1,62 @@
-import { Action, ActionPanel, Icon } from "@raycast/api";
-import { getUserToken, getVaultNamespace, getVaultUrl } from "../utils";
+import { Action, ActionPanel, Icon, useNavigation } from "@raycast/api";
+import { getFavoriteNamespaces, getUserToken, getVaultNamespace, getVaultUrl, setVaultNamespace } from "../utils";
 import { VaultNamespace } from "./namespace";
 import { VaultTree } from "./tree";
 import { VaultEntities } from "./entities";
 import { VaultFavorites } from "./favorites";
+import { ReactNode } from "react";
+
+export function setNamespaceAndGoToTree(values: { namespace: string }, push: (component: ReactNode) => void) {
+  setVaultNamespace(values.namespace);
+  push(<VaultTree path={"/"} />);
+}
 
 export function Configuration() {
+  const { push } = useNavigation();
+
   return (
-    <ActionPanel.Section title="Configuration">
-      <Action.Push
-        icon={Icon.Cog}
-        title={"Change namespace"}
-        shortcut={{ modifiers: ["cmd"], key: "y" }}
-        target={<VaultNamespace />}
-      />
-      <Action.Push
-        icon={Icon.Star}
-        title={"List favorites"}
-        shortcut={{ modifiers: ["cmd"], key: "f" }}
-        target={<VaultFavorites />}
-      />
-      <Action.Push
-        icon={Icon.PersonLines}
-        title={"List entities"}
-        shortcut={{ modifiers: ["cmd", "opt"], key: "a" }}
-        target={<VaultEntities />}
-      />
-      <Action.Push
-        icon={Icon.List}
-        title={"List secrets"}
-        shortcut={{ modifiers: ["cmd", "opt"], key: "t" }}
-        target={<VaultTree path={"/"} />}
-      />
-    </ActionPanel.Section>
+    <>
+      {getFavoriteNamespaces().length > 0 && (
+        <ActionPanel.Section title="Favorite namespaces">
+          {getFavoriteNamespaces()
+            .filter((namespace) => namespace !== getVaultNamespace())
+            .map((namespace) => (
+              <Action
+                key={namespace}
+                icon={Icon.Book}
+                title={`Switch to ${namespace}`}
+                onAction={() => setNamespaceAndGoToTree({ namespace }, push)}
+              />
+            ))}
+        </ActionPanel.Section>
+      )}
+      <ActionPanel.Section title="Configuration">
+        <Action.Push
+          icon={Icon.Cog}
+          title={"Change namespace"}
+          shortcut={{ modifiers: ["cmd"], key: "y" }}
+          target={<VaultNamespace />}
+        />
+        <Action.Push
+          icon={Icon.Star}
+          title={"List favorites"}
+          shortcut={{ modifiers: ["cmd"], key: "f" }}
+          target={<VaultFavorites />}
+        />
+        <Action.Push
+          icon={Icon.PersonLines}
+          title={"List entities"}
+          shortcut={{ modifiers: ["cmd", "opt"], key: "a" }}
+          target={<VaultEntities />}
+        />
+        <Action.Push
+          icon={Icon.List}
+          title={"List secrets"}
+          shortcut={{ modifiers: ["cmd", "opt"], key: "t" }}
+          target={<VaultTree path={"/"} />}
+        />
+      </ActionPanel.Section>
+    </>
   );
 }
 

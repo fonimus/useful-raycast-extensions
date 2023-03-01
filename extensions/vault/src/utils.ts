@@ -25,6 +25,7 @@ export interface VaultPreferences {
   ldap: string;
   password: string;
   technicalPaths: string;
+  favoriteNamespaces: string;
   enableWrite: boolean;
   enableDelete: boolean;
 }
@@ -33,7 +34,6 @@ const preferences = getPreferenceValues<VaultPreferences>();
 const vaultUrl = preferences.url.replace(/\/$/, "");
 const ldap = preferences.ldap;
 const password = preferences.password;
-console.log(preferences);
 const cache = new Cache();
 
 export function writeEnabled(): boolean {
@@ -71,6 +71,10 @@ export function setVaultNamespace(newNamespace: string) {
 
 export function getTechnicalPaths(): string[] {
   return preferences.technicalPaths ? preferences.technicalPaths.split(" ") : [];
+}
+
+export function getFavoriteNamespaces(): string[] {
+  return preferences.favoriteNamespaces ? preferences.favoriteNamespaces.split(" ") : [];
 }
 
 export function getUserToken(): string {
