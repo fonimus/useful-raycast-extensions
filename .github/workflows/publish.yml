@@ -59,6 +59,13 @@ jobs:
         if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run -w ${{ matrix.extension }} build
 
+      - name: Copy raycast package.json
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          raycastApiPackageJsonDir=node_modules/@raycast/api/
+          mkdir -p extensions/${{ matrix.extension }}/$raycastApiPackageJsonDir/
+          cp $raycastApiPackageJsonDir/package.json extensions/${{ matrix.extension }}/$raycastApiPackageJsonDir/package.json
+
       - name: Publish extension ${{ matrix.extension }}
         if: steps.changed-files.outputs.any_changed == 'true'
         run: npm run -w ${{ matrix.extension }} publish
