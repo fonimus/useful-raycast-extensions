@@ -50,7 +50,7 @@ export function VaultFavorites() {
               <ActionPanel>
                 <ActionPanel.Section title="Navigation">
                   {entry.folder ? (
-                    <Action.Push icon={Icon.ArrowDown} title="Go Down" target={<VaultTree path={entry.key} />} />
+                    <Action.Push icon={Icon.ArrowDown} title="Go Inside" target={<VaultTree path={entry.key} />} />
                   ) : (
                     <Action.Push
                       icon={Icon.ArrowDown}
