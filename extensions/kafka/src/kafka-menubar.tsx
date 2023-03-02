@@ -153,6 +153,7 @@ export default function KafkaLag() {
         <MenuBarExtra.Item
           title={state === "NotLoaded" ? "Not yet loaded, click to force reload" : "Force reload"}
           icon={Icon.Clock}
+          shortcut={{ modifiers: ["cmd", "opt"], key: "r" }}
           onAction={async () => {
             setIsLoading(true);
             await load(LaunchType.Background, env).finally(() => setIsLoading(false));
