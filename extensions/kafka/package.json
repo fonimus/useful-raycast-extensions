@@ -80,7 +80,7 @@
     }
   ],
   "dependencies": {
-    "@raycast/api": "1.48.8",
+    "@raycast/api": "1.50.2",
     "kafkajs": "2.2.4",
     "moment": "2.29.4"
   },
