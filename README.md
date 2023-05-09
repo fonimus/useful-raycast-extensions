@@ -16,17 +16,17 @@
 
 ## Extensions
 
-### Vault
-
-[Read documentation](extensions/vault-manager/README.md)
-
-### Github
+### Github Pulls
 
 [Read documentation](extensions/github-pulls/README.md)
 
+### Vault
+
+Now in raycast store : https://www.raycast.com/fonimus/vault-manager
+
 ### Kafka
 
-[Read documentation](extensions/kafka/README.md)
+Now in raycast store : https://www.raycast.com/fonimus/kafka
 
 ## Development
 
