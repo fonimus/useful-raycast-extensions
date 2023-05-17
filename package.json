@@ -12,7 +12,7 @@
     "postinstall": "node post-install.js"
   },
   "dependencies": {
-    "@raycast/api": "1.48.8",
+    "@raycast/api": "1.51.2",
     "@raycast/utils": "1.5.2"
   },
   "devDependencies": {
