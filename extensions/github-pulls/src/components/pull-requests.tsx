@@ -48,8 +48,8 @@ export function PullRequests(props: { repo?: string }) {
           approvalPromises.push(
             githubClient.rest.pulls
               .listReviews({
-                owner: pull.head.repo.owner.login,
-                repo: pull.head.repo.name,
+                owner: pull.head.repo?.owner.login || "",
+                repo: pull.head.repo?.name || "",
                 pull_number: pull.number,
               })
               .then((value) => {
@@ -89,13 +89,13 @@ export function PullRequests(props: { repo?: string }) {
   }, [pulls, showBot]);
 
   const onChange = useCallback(
-    (number: string | null) => {
-      if (!number) {
+    (id: string | null) => {
+      if (!id) {
         return;
       }
       for (const pull of pulls) {
-        if (pull.number.toString() === number) {
-          setNavigation(`#${pull.number} - ${pull.head.repo.owner.login}/${pull.head.repo.name}`);
+        if (pull.id.toString() === id) {
+          setNavigation(`#${pull.number} - ${pull.head.repo?.owner.login}/${pull.head.repo?.name}`);
         }
       }
     },
@@ -126,8 +126,8 @@ export function PullRequests(props: { repo?: string }) {
       ) {
         await githubClient.rest.pulls
           .createReview({
-            owner: pull.head.repo.owner.login,
-            repo: pull.head.repo.name,
+            owner: pull.head.repo?.owner.login || "",
+            repo: pull.head.repo?.name || "",
             pull_number: pull.number,
             event: "APPROVE",
           })
@@ -182,8 +182,8 @@ export function PullRequests(props: { repo?: string }) {
       />
       {getPulls().map((pull) => (
         <List.Item
-          id={`${pull.number}`}
-          key={pull.number}
+          id={`${pull.id}`}
+          key={pull.id}
           title={
             !pull.draft
               ? {
@@ -273,7 +273,10 @@ export function PullRequests(props: { repo?: string }) {
                 <Action
                   icon={Icon.Check}
                   title="Approve"
-                  shortcut={{ modifiers: ["cmd", "shift"], key: "a" }}
+                  shortcut={{
+                    modifiers: ["cmd", "shift"],
+                    key: "a",
+                  }}
                   onAction={() => approve(pull)}
                 />
               </ActionPanel.Section>
@@ -288,7 +291,10 @@ export function PullRequests(props: { repo?: string }) {
                   <Action
                     title={showBody ? "Hide body" : "Show body"}
                     icon={showBody ? Icon.EyeDisabled : Icon.Eye}
-                    shortcut={{ modifiers: ["cmd"], key: "b" }}
+                    shortcut={{
+                      modifiers: ["cmd"],
+                      key: "b",
+                    }}
                     onAction={() => setShowBody(!showBody)}
                   />
                 )}
@@ -303,7 +309,10 @@ export function PullRequests(props: { repo?: string }) {
                 <Action.CopyToClipboard
                   icon={Icon.CopyClipboard}
                   title="Copy url"
-                  shortcut={{ modifiers: ["cmd", "opt"], key: "c" }}
+                  shortcut={{
+                    modifiers: ["cmd", "opt"],
+                    key: "c",
+                  }}
                   content={pull.html_url}
                 />
               </ActionPanel.Section>
@@ -314,8 +323,8 @@ export function PullRequests(props: { repo?: string }) {
               markdown={showBody ? pull.body : undefined}
               metadata={
                 <List.Item.Detail.Metadata>
-                  <List.Item.Detail.Metadata.Label title="Owner" text={pull.head.repo.owner.login} />
-                  <List.Item.Detail.Metadata.Label title="Repo" text={pull.head.repo.name} />
+                  <List.Item.Detail.Metadata.Label title="Owner" text={pull.head.repo?.owner.login || ""} />
+                  <List.Item.Detail.Metadata.Label title="Repo" text={pull.head.repo?.name || ""} />
                   <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label title="Title" text={pull.title} />
                   <List.Item.Detail.Metadata.Label title="Branch" text={pull.head.ref} />
